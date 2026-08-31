@@ -1,0 +1,10 @@
+export type { Speaker } from './speaker';
+export type { Article } from './article';
+export type { Expedition, ExpeditionRegion } from './expedition';
+export type { ProgramDay } from './program';
+export type { WhyUsItem } from './whyUs';
+export type { Review } from './review';
+export type { MediaChannel } from './media';
+export type { Partner } from './partner';
+export type { SiteConfig } from './config';
+export type { ContactsConfig } from './contact';
