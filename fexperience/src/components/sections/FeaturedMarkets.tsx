@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { getNearestExpedition, expeditions } from '@/data/expeditions';
-import { programs } from '@/data/program';
 import { regions } from '@/data/regions';
 import type { Expedition } from '@/types/expedition';
 
@@ -15,31 +14,21 @@ function formatDates(dates: string) {
   return dates.replace(/-/g, '—');
 }
 
-/** Короткий тизер описания дня — для preview-карточки. */
-function teaser(text: string, max = 108): string {
-  const clean = text.replace(/\|/g, ' ').replace(/\s+/g, ' ').trim();
-  if (clean.length <= max) return clean;
-  return clean.slice(0, max).trimEnd() + '…';
-}
-
-/** Первое предложение описания — контекстная строка тёмной зоны. */
-function firstSentence(text: string): string {
-  const clean = text.replace(/\|/g, ' ').replace(/\s+/g, ' ').trim();
-  const idx = clean.indexOf('.');
-  return idx > 30 ? clean.slice(0, idx + 1) : clean;
-}
-
 export function FeaturedMarkets() {
   const nearest = getNearestExpedition(expeditions);
   if (!nearest) return null;
 
-  const program = nearest.programSlug ? programs[nearest.programSlug] ?? [] : [];
-  const days = program.slice(0, 3);
   const region = regions.find((r) => r.id === nearest.region);
+
+  // Три карточки тёмной панели: первая — Вьетнам, дальше — две со статусом «скоро»
+  const vietnam = expeditions.find((e) => e.slug === 'vietnam');
+  const soon = expeditions
+    .filter((e) => e.status === 'upcoming' && e.slug !== vietnam?.slug)
+    .slice(0, 2);
+  const cards = [vietnam, ...soon].filter((e): e is Expedition => Boolean(e)).slice(0, 3);
 
   // Контекстный абзац правой половины — собран из данных экспедиции
   const lead =
-    (days[0] ? firstSentence(days[0].description) : '') ||
     nearest.fullDescription ||
     nearest.description ||
     `Бизнес-экспедиция в ${nearest.country}`;
@@ -81,29 +70,35 @@ export function FeaturedMarkets() {
 
       {/* Правая половина — единая тёмная поверхность */}
       <div className="program-block__panel">
+        <span className="eyebrow-dash" aria-hidden="true" />
         <span className="program-block__eyebrow">Ближайшие экспедиции</span>
         <h2 className="program-block__title">
           Бизнес начинается там, где заканчивается знакомое.
         </h2>
-        <p className="program-block__paragraph">{paragraph}</p>
+        {/* <p className="program-block__paragraph">{paragraph}</p> */}
+        <p className="program-block__paragraph">Благодаря участию в деловых мероприятиях, встречам с органами власти и местными предпринимателями, вы сможете оценить не только потенциал развития бизнеса, но и скрытые угрозы нового рынка - в России и зарубежом.</p>
 
-        {days.length > 0 && (
+        {cards.length > 0 && (
           <div className="program-days">
-            {days.map((day) => (
-              <article className="program-day" key={day.day}>
+            {cards.map((exp) => (
+              <Link
+                href={`/expeditions/${exp.slug}`}
+                className="program-day"
+                key={exp.slug}
+              >
                 <div className="program-day__imgwrap">
                   <Image
-                    src={day.image}
-                    alt={day.title || `${nearest.country}, день ${day.day}`}
+                    src={exp.image}
+                    alt={`Бизнес-экспедиция в ${exp.country}`}
                     fill
                     sizes="(min-width: 1025px) 17vw, 72vw"
                   />
                 </div>
-                <span className="program-day__num">
-                  День {String(day.day).padStart(2, '0')}
-                </span>
-                <p className="program-day__text">{teaser(day.description)}</p>
-              </article>
+                <span className="program-day__num">{exp.country}</span>
+                <p className="program-day__text">
+                  {exp.dates ? formatDates(exp.dates) : statusLabels[exp.status]}
+                </p>
+              </Link>
             ))}
           </div>
         )}

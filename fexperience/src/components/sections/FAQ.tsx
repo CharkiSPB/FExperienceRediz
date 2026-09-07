@@ -12,11 +12,16 @@ export function FAQ() {
       <div className="mx-auto max-w-[1280px] px-6 md:px-16">
         <div className="faq-inner">
           <header className="faq-header">
-            <p className="font-sans text-[13px] font-semibold uppercase tracking-[.08em] text-brand-600">
-              FAQ
-            </p>
-            <h2 className="mt-3 font-display text-[clamp(28px,3vw,40px)] font-semibold leading-tight text-text-primary">
-              Часто задаваемые вопросы
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/faq/roza-vetrov1.webp"
+              alt=""
+              aria-hidden="true"
+              className="faq-emblem"
+            />
+            <h2 className="whitespace-nowrap font-display text-[clamp(26px,2.6vw,36px)] font-semibold leading-tight text-text-primary">
+              <span className="block">Часто задаваемые</span>
+              <span className="block">вопросы</span>
             </h2>
           </header>
 

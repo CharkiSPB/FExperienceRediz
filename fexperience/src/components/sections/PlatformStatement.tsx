@@ -67,7 +67,20 @@ export function PlatformStatement() {
             {platformStatement.eyebrow}
           </div>
 
-          <h2 className="project-statement">{platformStatement.statement}</h2>
+          <h2 className="project-statement">
+            {(() => {
+              const phrase = 'готовность вашего бизнеса к масштабированию';
+              const parts = platformStatement.statement.split(phrase);
+              if (parts.length < 2) return platformStatement.statement;
+              return (
+                <>
+                  {parts[0]}
+                  <em className="project-statement-accent">{phrase}</em>
+                  {parts[1]}
+                </>
+              );
+            })()}
+          </h2>
 
           <p className="project-subtext">{platformStatement.subText}</p>
 

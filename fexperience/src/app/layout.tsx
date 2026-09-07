@@ -27,21 +27,22 @@ const helveticaSerif = localFont({
   display: 'swap',
 });
 
-// Playfair Display — только для заголовков H1/H2/H3 (локально из public/fonts)
+// Philosopher — только для заголовков H1/H2/H3 (локально из public/fonts)
+// Имя переменной --font-playfair сохранено, чтобы не трогать весь CSS (откат: вернуть PlayfairDisplay-файлы)
 const playfair = localFont({
   src: [
-    { path: '../../public/fonts/PlayfairDisplay/PlayfairDisplay-Regular.woff2', weight: '400', style: 'normal' },
-    { path: '../../public/fonts/PlayfairDisplay/PlayfairDisplay-Bold.woff2', weight: '700', style: 'normal' },
-    { path: '../../public/fonts/PlayfairDisplay/PlayfairDisplay-Black.woff2', weight: '900', style: 'normal' },
+    { path: '../../public/fonts/Philosopher/Philosopher-Regular.woff2', weight: '400', style: 'normal' },
+    { path: '../../public/fonts/Philosopher/Philosopher-Bold.woff2', weight: '700', style: 'normal' },
   ],
   variable: '--font-playfair',
   display: 'swap',
 });
 
-// Рукописный editorial-шрифт (2.5A manifesto) — Marck Script, полная кириллица
+// Рукописный editorial-шрифт (2.5A manifesto) — Good Vibes Pro
+// Имя переменной --font-handwritten сохранено (откат: MarckScript / Avalon-medium / Florisel / Sloop лежат рядом)
 const marckScript = localFont({
   src: [
-    { path: '../../public/fonts/MarckScript/MarckScript-Regular.ttf', weight: '400', style: 'normal' },
+    { path: '../../public/fonts/good-vibes-pro/good-vibes-pro.woff2', weight: '400', style: 'normal' },
   ],
   variable: '--font-handwritten',
   display: 'swap',

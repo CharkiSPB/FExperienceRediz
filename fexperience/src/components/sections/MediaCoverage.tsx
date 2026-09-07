@@ -36,9 +36,10 @@ export function MediaCoverage() {
             <p className="mt-4 max-w-[440px] font-sans text-[16px] leading-[1.6] text-text-secondary">
               {mediaLayer.subtitle}
             </p>
-            <div className="mt-10">
+            <div className="media-stats">
               {mediaLayer.stats.map((stat) => (
                 <div key={stat.label} className="media-stat-row">
+                  <span className="media-stat-kicker">{stat.kicker}</span>
                   <span className="media-stat-number">{stat.number}</span>
                   <span className="media-stat-label">{stat.label}</span>
                   <div className="media-stat-desc">{stat.description}</div>

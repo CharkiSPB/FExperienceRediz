@@ -34,9 +34,12 @@ export function Reviews() {
     <section id="reviews" className="reviews-section px-6 py-20 md:px-16 md:py-32">
       <div className="mx-auto max-w-[1280px]">
         <header className="mb-12 flex items-center justify-between gap-6">
-          <p className="font-sans text-[13px] font-semibold uppercase tracking-[.08em] text-brand-600">
-            Отзывы участников
-          </p>
+          <div>
+            <span className="eyebrow-dash" aria-hidden="true" />
+            <p className="font-sans text-[13px] font-semibold uppercase tracking-[.08em] text-brand-600">
+              Отзывы участников
+            </p>
+          </div>
           <div className="flex gap-3">
             <button
               onClick={scrollPrev}

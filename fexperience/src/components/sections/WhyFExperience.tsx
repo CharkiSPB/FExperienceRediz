@@ -9,6 +9,7 @@ export function WhyFExperience() {
     <section id="why" className="why-section px-6 py-20 md:px-16 md:py-32">
       <div className="mx-auto max-w-[1280px]">
         <header className="mb-12 md:mb-16">
+          <span className="eyebrow-dash" aria-hidden="true" />
           <p className="font-sans text-[13px] font-semibold uppercase tracking-[.08em] text-brand-600">
             {whySection.eyebrow}
           </p>

@@ -52,6 +52,7 @@ export function RegionSelector() {
     <section className="region-selector" aria-labelledby="region-selector-title">
       <div className="container">
         <header className="region-selector__header">
+          <span className="eyebrow-dash" aria-hidden="true" />
           <div className="region-selector__eyebrow">НАПРАВЛЕНИЯ</div>
 
           <h2 id="region-selector-title" className="region-selector__title">

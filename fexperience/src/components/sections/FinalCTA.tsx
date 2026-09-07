@@ -10,7 +10,7 @@ export function FinalCTA() {
           Присоединяйтесь к бизнес-экспедиции FExperience с Forbes —
           доступ к предпринимателям, локальным экспертам и людям, принимающим решения на новом рынке.
         </p>
-        <div>
+        <div className="final-cta__action">
           <Link href="/expeditions#form" className="btn-liquid btn-liquid--lg">
             <span className="btn-liquid-text">Стать участником</span>
           </Link>

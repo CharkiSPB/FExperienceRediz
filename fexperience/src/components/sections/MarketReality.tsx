@@ -62,6 +62,23 @@ export function MarketReality() {
 
   return (
     <section className="stats-band-section" aria-label="Статистика экспансии">
+      {/* Editorial-шапка: цифры ниже — без изменений */}
+      <div className="stats-band-header fade-up">
+        <div className="stats-band-head">
+          <span className="eyebrow-dash" aria-hidden="true" />
+          <p className="stats-band-eyebrow">Экспансия</p>
+          <h2 className="stats-band-title">
+            Новый рынок начинается не с карты,
+            <br />
+            а с понимания его специфики.
+          </h2>
+        </div>
+        <p className="stats-band-lead">
+          Тысячи бизнесменов ежегодно выходят за пределы привычного рынка.
+          Знание локальной специфики помогает увидеть риски и возможности
+          ещё до принятия решения об экспансии.
+        </p>
+      </div>
       <div className="stats-band-container">
         <div className="stats-band">
           {columns.map((stat) => {

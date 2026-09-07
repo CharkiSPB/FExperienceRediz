@@ -129,6 +129,7 @@ export function CountdownTimer({ expeditionSlug = 'south-africa', variant = 'def
   if (variant === 'homepage' || variant === 'detail') {
     const panel = (
       <>
+        <span className="eyebrow-dash eyebrow-dash--center" aria-hidden="true" />
         <p className="home-countdown__eyebrow">ДО НАЧАЛА ЭКСПЕДИЦИИ</p>
         <div className="home-countdown__values">
           <HomeTimerUnit value={timeLeft.days} label="ДНИ" />

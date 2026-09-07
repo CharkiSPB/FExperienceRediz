@@ -2,21 +2,19 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { Menu, X, Send } from 'lucide-react';
 import { ParticipantModal } from '@/components/shared/ParticipantModal';
 import { PartnerModal } from '@/components/shared/PartnerModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { useLenis } from '@/components/providers/LenisProvider';
 
 const TG_LINK = 'https://t.me/Milena_Amor';
 
 const NAV_ITEMS = [
-  { label: 'Рынки', href: '/#markets', anchor: true },
-  { label: 'Экспедиции', href: '/expeditions', anchor: false },
-  { label: 'Статьи', href: '/articles', anchor: false },
-  { label: 'О нас', href: '/about', anchor: false },
+  { label: 'Экспедиции', href: '/expeditions' },
+  { label: 'Статьи', href: '/articles' },
+  { label: 'О нас', href: '/about' },
 ] as const;
 
 export function Header() {
@@ -26,27 +24,8 @@ export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [showJoin, setShowJoin] = useState(false);
   const pathname = usePathname();
-  const lenis = useLenis();
-  const router = useRouter();
 
   const closeMenu = useCallback(() => setIsOpen(false), []);
-
-  // Скролл к hash-секции через Lenis (с fallback на нативный скролл)
-  const scrollToHash = useCallback((e: React.MouseEvent<HTMLAnchorElement>, hash: string) => {
-    e.preventDefault();
-    if (pathname !== '/') {
-      router.push('/' + hash);
-      return;
-    }
-    const target = document.querySelector(hash);
-    if (!target) return;
-    window.history.pushState(null, '', hash);
-    if (lenis?.scrollTo) {
-      lenis.scrollTo(target as HTMLElement);
-    } else {
-      target.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [lenis, pathname, router]);
 
   // Детальная страница экспедиции (/expeditions/[slug])
   const isExpeditionDetail = /^\/expeditions\/[^/]+$/.test(pathname ?? '');
@@ -131,18 +110,6 @@ export function Header() {
               const underline = active
                 ? 'after:absolute after:left-0 after:-bottom-1.5 after:h-[2px] after:w-full after:bg-brand-600'
                 : '';
-              if (item.anchor) {
-                return (
-                  <a
-                    key={item.label}
-                    href={item.href}
-                    onClick={(e) => scrollToHash(e, '#markets')}
-                    className={`relative text-[15px] font-medium leading-none whitespace-nowrap transition-colors duration-200 cursor-pointer ${navColor(active)}`}
-                  >
-                    {item.label}
-                  </a>
-                );
-              }
               return (
                 <Link
                   key={item.label}
@@ -211,23 +178,13 @@ export function Header() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: i * 0.05, ease: [0.16, 1, 0.3, 1] }}
                 >
-                  {item.anchor ? (
-                    <a
-                      href={item.href}
-                      onClick={(e) => { scrollToHash(e, '#markets'); closeMenu(); }}
-                      className={`mobile-nav-link ${isActive(item.href) ? 'active' : ''}`}
-                    >
-                      {item.label}
-                    </a>
-                  ) : (
-                    <Link
-                      href={item.href}
-                      onClick={closeMenu}
-                      className={`mobile-nav-link ${isActive(item.href) ? 'active' : ''}`}
-                    >
-                      {item.label}
-                    </Link>
-                  )}
+                  <Link
+                    href={item.href}
+                    onClick={closeMenu}
+                    className={`mobile-nav-link ${isActive(item.href) ? 'active' : ''}`}
+                  >
+                    {item.label}
+                  </Link>
                 </motion.div>
               ))}
             </nav>

@@ -10,7 +10,7 @@
   --region-terracotta: #B86F57;
 
   padding: 120px 0;
-  background: var(--bg-canvas);
+  background: var(--bg-paper-muted); /* #E8DCD2 — muted paper, map area */
 }
 
 .region-selector .container {
@@ -33,7 +33,7 @@
 
 .region-selector__title {
   margin: 0;
-  font: 500 clamp(44px, 5vw, 64px)/1 "Playfair Display", Georgia, serif;
+  font: 500 clamp(44px, 5vw, 64px)/1 var(--font-display), Georgia, serif;
   letter-spacing: -.03em;
   color: var(--text-primary);
 }
@@ -52,7 +52,7 @@
   flex-direction: column;
   padding: 20px 20px 18px;
   border-radius: 10px;
-  background: linear-gradient(135deg, rgba(255, 241, 229, .7), rgba(242, 223, 206, .45));
+  background: linear-gradient(135deg, rgba(249, 238, 229, .7), rgba(241, 227, 216, .45));
   border: 1px solid rgba(184, 111, 87, .14);
   text-decoration: none;
   color: inherit;
@@ -129,7 +129,7 @@
 /* NAME + DESC — под картой, слева */
 .region-card__name {
   margin: 0;
-  font: 600 20px/1.15 var(--font-display), "Playfair Display", Georgia, serif;
+  font: 600 20px/1.15 var(--font-display), Georgia, serif;
   letter-spacing: -.01em;
   color: var(--text-primary);
 }

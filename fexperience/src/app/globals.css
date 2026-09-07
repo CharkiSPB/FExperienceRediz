@@ -2,11 +2,21 @@
 @plugin "@tailwindcss/typography";
 
 @theme {
-  /* === БУМАЖНАЯ СИСТЕМА (FExperience_background_layers.md — иерархия поверхностей) === */
-  --color-canvas:         #FFF1E5; /* основная бумага 65-75% */
-  --color-surface:        #F2DFCE; /* второй слой бумаги 15-25% */
-  --color-elevated:       #FFF8F2; /* светлая локальная поверхность */
-  --color-footer:         #F0ECE5;
+  /* === БУМАЖНАЯ СИСТЕМА (нейтральная, без персиковости — ветка palette/neutral-paper) === */
+  /* 01 — Основной холст: главная бумага, ~60-70% сайта */
+  --color-canvas:         #F9EEE5;
+  /* 02 — Второй бумажный слой: чередующиеся секции, региональные блоки */
+  --color-surface:        #F1E3D8;
+  /* 03 — Светлая бумага / elevated: локальные подложки, фото-композиции */
+  --color-elevated:       #FFF8F3;
+  /* 04 — Почти белая бумага: FAQ, небольшие editorial-блоки */
+  --color-paper-light:    #FCF7F2;
+  /* 05 — Глубокая бумага: экспедиционные / cinematic секции */
+  --color-paper-dark:     #272421;
+  /* 06 — Тёмно-кремовый промежуточный слой: разделители, map areas, secondary surfaces */
+  --color-paper-muted:    #E8DCD2;
+  /* 07 — Footer и техническая нижняя часть */
+  --color-footer:         #EEE9E3;
 
   --color-text-primary:   #1A1A1A;
   --color-text-secondary: #6D6D6D;
@@ -66,13 +76,16 @@
 
 /* Фирменные градиенты — приглушены под новую бумагу (без усиления насыщенности) */
 :root {
-  --gradient-editorial-warm: linear-gradient(135deg, #FFF1E5 0%, #F2DFCE 100%);
+  --gradient-editorial-warm: linear-gradient(135deg, #F9EEE5 0%, #F1E3D8 100%);
   --gradient-signature: linear-gradient(45deg, #B7410E 0%, #FF7722 55%, #FFE8D6 100%);
 
   /* Алиасы токенов — иерархия бумаги (background_layers.md) */
-  --bg-canvas: var(--color-canvas);   /* #FFF1E5 основная бумага */
-  --bg-surface: var(--color-surface); /* #F2DFCE второй слой */
-  --bg-elevated: var(--color-elevated); /* #FFF8F2 светлая поверхность */
+  --bg-canvas: var(--color-canvas);   /* #F9EEE5 основная бумага */
+  --bg-surface: var(--color-surface); /* #F1E3D8 второй слой */
+  --bg-elevated: var(--color-elevated); /* #FFF8F3 светлая поверхность */
+  --bg-paper-light: var(--color-paper-light); /* #FCF7F2 почти белая */
+  --bg-paper-muted: var(--color-paper-muted); /* #E8DCD2 muted */
+  --bg-paper-dark: var(--color-paper-dark);   /* #272421 глубокая */
   --text-primary: var(--color-text-primary);
   --text-secondary: var(--color-text-secondary);
   --text-tertiary: var(--color-text-tertiary);
@@ -92,7 +105,7 @@
   --ease: cubic-bezier(.16, 1, .3, 1);
 
   /* Paper texture / material surface — фактура бумаги (сохраняем слабый noise) */
-  --paper-bg: #FFF8F2;
+  --paper-bg: #FFF8F3;
   --paper-noise-opacity: 0.018;
   --paper-noise-opacity-quiet: 0.012;
   --paper-noise-opacity-editorial: 0.024;
@@ -479,13 +492,13 @@ body::before {
 }
 
 .why-card-number {
-  font: 500 20px/1 'Playfair Display', serif;
+  font: 500 20px/1 var(--font-display), serif;
   letter-spacing: -0.02em;
   color: var(--orange-600);
 }
 
 .why-card-title {
-  font: 600 clamp(24px, 2vw, 34px)/1.08 'Playfair Display', serif;
+  font: 600 clamp(24px, 2vw, 34px)/1.08 var(--font-display), serif;
   letter-spacing: -0.02em;
   color: #171411;
   margin: 12px 0;
@@ -1477,6 +1490,7 @@ body::before {
   position: relative;
   width: min(820px, calc(100vw - 48px));
   padding: 76px 72px;
+  text-align: center;
   border-radius: 32px;
   background: linear-gradient(135deg, rgba(255, 255, 255, .48), rgba(255, 255, 255, .25));
   border: 1px solid rgba(255, 255, 255, .72);
@@ -1540,6 +1554,13 @@ body::before {
   color: rgba(29, 27, 25, .70);
 }
 
+.final-cta__action {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+}
+
 .final-cta .btn-liquid {
   position: relative;
   z-index: 2;
@@ -1573,13 +1594,13 @@ body::before {
    фото-блок (ноутбук + журнал) слева, строки статистики справа */
 .media-photos {
   position: relative;
-  height: 420px;
+  height: 390px;
 }
 .media-photo-main {
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 85%;
+  width: 78%;
   aspect-ratio: 3 / 2;
   border-radius: var(--radius-md);
   overflow: hidden;
@@ -1589,24 +1610,45 @@ body::before {
   position: absolute;
   top: 0;
   right: 0;
-  width: 55%;
+  width: 50%;
   aspect-ratio: 3 / 4;
   border-radius: var(--radius-md);
   overflow: hidden;
   border: 3px solid var(--color-elevated);
   box-shadow: var(--shadow-hover);
 }
+/* Горизонтальный ряд: три колонки с вертикальными разделителями */
+.media-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 40px;
+}
 .media-stat-row {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   gap: 6px;
-  padding: 20px 0;
-  border-bottom: 1px solid var(--color-border);
+  padding: 4px 20px 4px 24px;
+  border-left: 1px solid var(--color-border);
 }
-.media-stat-row:first-child { border-top: 1px solid var(--color-border); }
+.media-stat-row:first-child {
+  border-left: 0;
+  padding-left: 0;
+}
+/* Подпись канала — фирменный чёрный, по центру над цифрой */
+.media-stat-kicker {
+  display: block;
+  text-align: center;
+  font: 600 15px/1.3 var(--font-sans), sans-serif;
+  letter-spacing: .04em;
+  color: var(--color-text-primary);
+}
 .media-stat-number {
+  display: block;
+  text-align: center;
   font-family: var(--font-display);
-  font-size: clamp(32px, 3vw, 44px);
+  font-size: clamp(30px, 2.8vw, 40px);
   font-weight: 600;
   line-height: 1;
   letter-spacing: -.02em;
@@ -1626,6 +1668,14 @@ body::before {
 
 @media (max-width: 767px) {
   .media-photos { height: 280px; }
+  /* На мобильном — обратно в вертикальный стек с горизонтальными линиями */
+  .media-stats { grid-template-columns: 1fr; }
+  .media-stat-row {
+    padding: 20px 0;
+    border-left: 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .media-stat-row:first-child { border-top: 1px solid var(--color-border); }
 }
 
 /* 2.8 Testimonials — редакционная карусель (Master 2.8)
@@ -1661,7 +1711,7 @@ body::before {
   position: absolute;
   top: 8px;
   left: 28px;
-  font: 700 96px/.8 'Playfair Display', serif;
+  font: 700 96px/.8 var(--font-display), serif;
   color: rgba(255, 119, 34, .16);
   pointer-events: none;
   z-index: 0;
@@ -1676,7 +1726,7 @@ body::before {
 }
 
 .testimonial-quote {
-  font: 500 clamp(20px, 2vw, 26px)/1.35 'Playfair Display', serif;
+  font: 500 clamp(13.5px, 1.25vw, 16px)/1.6 var(--font-display), serif;
   letter-spacing: -.01em;
   color: var(--color-text-primary);
 }
@@ -1708,22 +1758,35 @@ body::before {
 /* 2.9 FAQ — типографический accordion (Master 2.9)
    Самый спокойный блок страницы: никаких карточек, плитки и bento. */
 .faq {
-  padding: 120px 0;
-  background: var(--bg-canvas);
+  padding: 40px 0;
+  background: var(--bg-canvas); /* основной фон сайта */
 }
 
 .faq-inner {
   display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 80px;
+  grid-template-columns: minmax(360px, 520px) 1fr;
+  gap: 64px;
 }
 
+/* Слева: роза ветров + заголовок в две строки */
 .faq-header {
-  align-self: start;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  gap: 24px;
 }
 
+.faq-emblem {
+  width: 160px;
+  height: 160px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+/* Справа: аккордеон с вертикальной линией-разделителем впритык */
 .faq-list {
-  border-top: 1px solid var(--border-hairline);
+  border-left: 1px solid var(--border-hairline);
+  padding-left: 56px;
 }
 
 .faq-item {
@@ -1736,7 +1799,7 @@ body::before {
   justify-content: space-between;
   align-items: flex-start;
   gap: 24px;
-  padding: 25px 0;
+  padding: 18px 0;
   background: transparent;
   border: 0;
   text-align: left;
@@ -1780,7 +1843,7 @@ body::before {
 
 .faq-answer {
   max-width: 720px;
-  padding: 0 0 28px;
+  padding: 0 0 20px;
   font: 400 15px/1.6 var(--font-sans), sans-serif;
   color: var(--color-text-secondary);
 }
@@ -1790,11 +1853,19 @@ body::before {
     grid-template-columns: 1fr;
     gap: 32px;
   }
+  .faq-list {
+    border-left: 0;
+    padding-left: 0;
+  }
+  .faq-emblem {
+    width: 96px;
+    height: 96px;
+  }
 }
 
 @media (max-width: 767px) {
   .faq {
-    padding: 80px 0;
+    padding: 48px 0;
   }
 }
 
@@ -1813,9 +1884,9 @@ body::before {
   background:
     linear-gradient(
       90deg,
-      rgba(255, 246, 238, .96) 0%,
-      rgba(255, 242, 232, .78) 50%,
-      rgba(255, 246, 238, .96) 100%
+      rgba(255, 246, 238, .82) 0%,
+      rgba(255, 242, 232, .55) 50%,
+      rgba(255, 246, 238, .82) 100%
     ),
     url("/images/countdown-bg.webp") center / cover no-repeat;
 }
@@ -2000,7 +2071,43 @@ body::before {
 .stats-band-section {
   position: relative;
   padding: 0 0 72px;
-  background: var(--bg-canvas); /* #FFF1E5 — основной фон сайта */
+  background: var(--bg-canvas); /* #F9EEE5 — основной фон сайта */
+}
+
+/* Editorial-шапка над цифрами (полоса статистики — без изменений) */
+.stats-band-header {
+  width: min(1280px, calc(100% - 80px));
+  margin: 0 auto;
+  padding: 64px 0 44px;
+  text-align: center;
+}
+
+/* Обёртка сжимается по ширине заголовка — label встаёт ровно на его начало */
+.stats-band-head {
+  display: inline-block;
+}
+
+.stats-band-eyebrow {
+  margin: 0;
+  text-align: left;
+  font: 600 12px/1 var(--font-sans), sans-serif;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--orange-600);
+}
+
+.stats-band-title {
+  margin: 28px 0 0;
+  font: 600 clamp(30px, 3vw, 38px)/1.15 var(--font-display), Georgia, serif;
+  letter-spacing: -.02em;
+  color: var(--text-primary);
+}
+
+.stats-band-lead {
+  max-width: 700px;
+  margin: 14px auto 0;
+  font: 400 15px/1.6 var(--font-sans), sans-serif;
+  color: var(--text-secondary);
 }
 
 .stats-band-container {
@@ -2017,7 +2124,7 @@ body::before {
 .stat-col {
   position: relative;
   padding: 40px 48px 40px 40px;
-  background: linear-gradient(to right, #F2DFCE 0%, #FFF1E5 100%);
+  background: linear-gradient(to right, #F1E3D8 0%, #F9EEE5 100%);
   display: grid;
   grid-template-columns: auto auto; /* иконка | контент (авто-ширина — блок центрируется целиком) */
   column-gap: 12px;
@@ -2039,7 +2146,7 @@ body::before {
 }
 
 .stat-col-number {
-  font: 700 56px/1 "Playfair Display", Georgia, serif;
+  font: 700 56px/1 var(--font-display), Georgia, serif;
   color: var(--text-primary);
   letter-spacing: -.02em;
   white-space: nowrap;
@@ -2077,6 +2184,11 @@ body::before {
     padding: 0 0 56px;
   }
 
+  .stats-band-header {
+    width: calc(100% - 48px);
+    padding: 48px 0 36px;
+  }
+
   .stats-band {
     grid-template-columns: 1fr;
   }
@@ -2085,7 +2197,7 @@ body::before {
     grid-template-columns: auto minmax(0, 1fr);
     column-gap: 12px;
     padding: 28px 24px;
-    background: linear-gradient(to bottom, #F2DFCE 0%, #FFF1E5 100%);
+    background: linear-gradient(to bottom, #F1E3D8 0%, #F9EEE5 100%);
   }
 
   .stat-col-icon {
@@ -2106,7 +2218,7 @@ body::before {
    (FExperience_project_block_redesign.md — правая колонка)
    ════════════════════════════════════════════════════════════════ */
 .project-section {
-  background: var(--bg-canvas); /* #FFF1E5 */
+  background: var(--bg-canvas); /* #F9EEE5 */
   padding-block: 96px;
 }
 
@@ -2136,11 +2248,32 @@ body::before {
   background: var(--orange-600);
 }
 
+/* Общий короткий оранжевый штрих над eyebrow-label (как у 02 / FEXPERIENCE) */
+.eyebrow-dash {
+  display: block;
+  width: 32px;
+  height: 2px;
+  margin-bottom: 12px;
+  background: var(--orange-600);
+}
+.eyebrow-dash--center {
+  margin-inline: auto;
+}
+
 .project-statement {
   margin: 0;
-  font: 600 clamp(34px, 4vw, 52px)/1.12 var(--font-display), "Playfair Display", Georgia, serif;
+  font: 600 clamp(34px, 4vw, 52px)/1.12 var(--font-display), Georgia, serif;
   letter-spacing: -.025em;
   color: var(--text-primary);
+}
+
+/* Акцентная фраза — italic + тонкая оранжевая линия */
+.project-statement-accent {
+  font-style: italic;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 6px;
+  text-decoration-color: var(--orange-600);
 }
 
 .project-subtext {
@@ -2325,7 +2458,7 @@ body::before {
 
 .featured-markets-header h2 {
   margin-top: 14px;
-  font: 600 clamp(36px, 4vw, 54px)/1.08 "Playfair Display", Georgia, serif;
+  font: 600 clamp(36px, 4vw, 54px)/1.08 var(--font-display), Georgia, serif;
   letter-spacing: -.025em;
 }
 
@@ -2384,7 +2517,7 @@ body::before {
 }
 
 .featured-expedition-panel h3 {
-  font: 600 clamp(38px, 4vw, 58px)/.95 "Playfair Display", Georgia, serif;
+  font: 600 clamp(38px, 4vw, 58px)/.95 var(--font-display), Georgia, serif;
   letter-spacing: -.03em;
   color: var(--text-primary);
 }
@@ -2452,7 +2585,7 @@ body::before {
 
 .secondary-expedition-content h3 {
   margin-top: 8px;
-  font: 600 28px/1 "Playfair Display", Georgia, serif;
+  font: 600 28px/1 var(--font-display), Georgia, serif;
   color: var(--text-primary);
 }
 
@@ -2550,7 +2683,7 @@ body::before {
   flex-direction: column;
   min-height: 600px;
   padding: 56px 64px 48px;
-  background: #261d18;
+  background: var(--bg-paper-dark); /* #272421 — глубокая бумага, cinematic */
 }
 
 .program-block__eyebrow {
@@ -2562,7 +2695,7 @@ body::before {
 
 .program-block__title {
   margin: 16px 0 20px;
-  font: 600 clamp(28px, 2.6vw, 40px)/1.2 "Playfair Display", Georgia, serif;
+  font: 600 clamp(28px, 2.6vw, 40px)/1.2 var(--font-display), Georgia, serif;
   letter-spacing: -.02em;
   color: #fff6ee;
 }
@@ -2586,6 +2719,8 @@ body::before {
   min-width: 0;
   display: flex;
   flex-direction: column;
+  text-decoration: none; /* карточка — ссылка на экспедицию */
+  color: inherit;
 }
 
 .program-day__imgwrap {
@@ -2763,15 +2898,19 @@ body::before {
   color: rgba(29, 27, 25, .58);
 }
 
-/* Почти призрачный редакционный набросок — обнаруживается со второго взгляда */
+/* Почти призрачный редакционный набросок — фоновый объект во всю высоту секции */
 .position-section__illustration {
   position: absolute;
   z-index: 1;
-  top: -135px;
-  right: -98px;
-  width: 72%;
-  height: 820px;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(1000px, 68%);
+  height: auto;
   opacity: .3;
+  /* Мягкое растворение левой кромки в фоне — границы картинки не видно */
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 62%);
+  mask-image: linear-gradient(to right, transparent 0, #000 62%);
   filter:
     blur(.25px)
     saturate(1)
@@ -2784,7 +2923,7 @@ body::before {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   object-position: right center;
 }
 
@@ -2812,15 +2951,17 @@ body::before {
     line-height: 1.12;
   }
 
+  /* Скетч — фоном во всю секцию, текст поверх */
   .position-section__illustration {
-    position: relative;
-    top: auto;
-    right: auto;
-    width: 110%;
-    height: 340px;
-    margin-top: -30px;
-    margin-left: 20px;
-    opacity: .28;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    margin: 0;
+    opacity: .22;
   }
 }
 
@@ -2853,571 +2994,593 @@ body::before {
   color: var(--text-primary);
 }
 
-/* ── 4. Первый экран — editorial, без карточки ── */
+/* ── 4. Первый экран — editorial split (About.md: текст + скетч + печать) ── */
 .about-hero {
-  padding: 110px 0 88px;
-  background: var(--bg-surface);
+  position: relative;
+  overflow: hidden;
+  /* Верхний отступ заведомо больше спеки (40px), чтобы breadcrumbs
+     не уходили под фиксированную шапку */
+  padding: 120px 0 64px;
+  background: var(--color-canvas);
 }
 
-.about-hero__inner {
-  max-width: 900px;
+/* Сплит как на референсе: слева чистый фон + текст, справа скетч
+   в полную высоту с мягким переходом в фон. Контейнер — как у хедера. */
+/* Слой скетча — от секции (во всю ширину окна): справа до края,
+   вверх под хедер, вниз до полосы колонок */
+.about-hero__bgpaint {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 32%;
+  z-index: 0;
+}
+/* Переход сверху: скетч входит в фон под хедером */
+.about-hero__bgpaint::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    var(--color-canvas) 0%,
+    rgba(249, 238, 229, 0) 20%
+  );
+  pointer-events: none;
+}
+.about-hero__grid {
+  position: relative;
+  z-index: 1;
+  max-width: 1600px;
   margin: 0 auto;
-  padding: 0 24px;
-  text-align: center;
+  padding-inline: 64px;
+  min-height: 580px;
+  display: flex;
+  align-items: center;
+}
+.about-hero__content {
+  max-width: 520px;
+}
+
+.about-breadcrumbs {
+  font: 400 13px var(--font-sans), sans-serif;
+  color: var(--color-text-tertiary);
+}
+.about-breadcrumbs a {
+  color: inherit;
+  text-decoration: none;
+}
+.about-breadcrumbs a:hover {
+  color: var(--color-text-secondary);
+}
+.about-breadcrumbs span[aria-current] {
+  color: var(--color-text-secondary);
 }
 
 .about-hero__title {
-  margin-top: 28px;
-  font: 700 clamp(32px, 4.6vw, 56px)/1.12 var(--font-display), serif;
-  letter-spacing: -.015em;
-  color: var(--text-primary);
+  margin: 24px 0 32px;
+  font: 700 clamp(56px, 6.5vw, 92px)/1.05 var(--font-display), serif;
+  letter-spacing: -.02em;
+  color: var(--color-text-primary);
 }
 
-.about-hero__lead {
-  max-width: 560px;
-  margin: 28px auto 0;
-  font: 400 18px/1.6 var(--font-sans), sans-serif;
-  color: var(--text-secondary);
+.about-hero__statement {
+  max-width: 480px;
+  font: 600 clamp(20px, 1.8vw, 26px)/1.35 var(--font-display), serif;
+  color: var(--color-text-primary);
+}
+.about-hero__statement .accent {
+  color: var(--color-brand-600);
 }
 
-.about-hero__rule {
-  width: 48px;
-  height: 1px;
-  margin: 40px auto 0;
-  background: var(--orange-600);
+.about-hero__text {
+  max-width: 460px;
+  margin-top: 24px;
+  font: 400 15.5px/1.65 var(--font-sans), sans-serif;
+  color: var(--color-text-secondary);
 }
 
-/* ── 5. Editorial-манифест (язык position-section главной) ── */
-.about-manifest {
-  position: relative;
-  overflow: hidden;
-  background: var(--bg-canvas);
-  padding: 110px 0 76px;
+.about-hero__sketch {
+  object-fit: cover;
+  object-position: 68% center;
+  /* Переход: скетч входит в фон сайта слева */
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 24%);
+  mask-image: linear-gradient(to right, transparent 0, #000 24%);
 }
 
-.about-manifest__inner {
-  position: relative;
-  width: min(1320px, calc(100% - 120px));
-  min-height: 520px;
-  margin: 0 auto;
-}
-
-.about-manifest__line {
+/* Печать — правый верхний угол, поверх скетча */
+.about-hero__seal {
   position: absolute;
-  left: 0;
-  top: 0;
-  width: 1px;
-  height: 270px;
-  background: rgba(29, 27, 25, .14);
-}
-
-.about-manifest__content {
-  position: relative;
+  top: 80px;
+  right: 56px;
   z-index: 2;
-  width: min(680px, 58%);
-  margin-left: 110px;
-}
-
-.about-manifest__label {
-  margin-bottom: 34px;
-  font-family: var(--font-sans), sans-serif;
-  font-size: 12px;
-  line-height: 1;
-  font-weight: 600;
-  letter-spacing: .16em;
-  text-transform: uppercase;
-  color: var(--orange-600);
-}
-
-.about-manifest__title {
-  margin: 0;
-  font-family: var(--font-handwritten), cursive;
-  font-weight: 400;
-  font-size: clamp(38px, 3.25vw, 62px);
-  line-height: 1.12;
-  letter-spacing: -.015em;
-  color: #1D1B19;
-}
-
-.about-manifest__accent {
-  color: var(--orange-600);
-  text-decoration-line: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 6px;
-  text-decoration-color: var(--orange-600);
-}
-
-/* Бледный цветной editorial-скетч — заметный, но слабее текста.
-   Привязан к секции (не к внутреннему контейнеру) — тянется до края вьюпорта. */
-.about-manifest__illustration {
-  position: absolute;
-  z-index: 1;
-  top: -10px;
-  right: 0;
-  width: 56vw;
-  height: 620px;
-  opacity: .5;
-  filter: saturate(.9) contrast(.96) blur(.25px);
-  mask-image: linear-gradient(
-    to right,
-    transparent 0%,
-    rgba(0, 0, 0, .55) 25%,
-    #000 55%,
-    #000 100%
-  );
+  width: 132px;
+  height: 132px;
+  opacity: 0;
+  animation: about-seal-in .6s var(--ease) .35s forwards;
   pointer-events: none;
-  user-select: none;
 }
-
-.about-manifest__illustration img {
+.about-hero__seal-svg {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  object-position: right center;
+}
+@keyframes about-seal-in {
+  to { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .about-hero__seal { animation: none; opacity: 1; }
 }
 
-/* ── 7. Деловая программа — editorial photo essay (маршрут экспедиции) ── */
-.about-photoessay {
-  padding: 76px 0 120px;
-  background: var(--bg-canvas);
+/* ── Полоса 4 колонок: не карточки, только hairline-разделители ── */
+.about-mission {
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
 }
-
-.about-photoessay__head {
-  max-width: 640px;
-}
-
-.about-photoessay__caption {
-  max-width: 720px;
-  margin-top: 24px;
-  font: 400 17px/1.62 var(--font-sans), sans-serif;
-  color: var(--text-secondary);
-}
-
-/* Визуальный маршрут: large → two small → wide */
-.about-story {
-  margin-top: 56px;
-}
-
-.as-photo {
-  position: relative;
-  overflow: hidden;
-  border-radius: 14px;
-  border: 1px solid rgba(35, 30, 25, .06);
-  background: var(--bg-surface);
-  box-shadow: 0 20px 60px rgba(70, 45, 30, .05);
-}
-
-.as-photo img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform .6s var(--ease), filter .6s var(--ease);
-}
-
-.as-photo--main {
-  aspect-ratio: 16 / 10;
-}
-
-.as-photo--small {
-  aspect-ratio: 4 / 3;
-}
-
-.as-photo--wide {
-  aspect-ratio: 21 / 9;
-}
-
-/* Очень лёгкий hover — без сильного zoom */
-.as-photo:hover img {
-  transform: scale(1.02);
-  filter: brightness(1.02) saturate(1.03);
-}
-
-.as-row {
+.about-mission__grid {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 56px 64px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(20px, 2.4vw, 36px);
-  margin-top: 48px;
+  grid-template-columns: repeat(4, 1fr);
 }
-
-/* Editorial-подпись под фотографией */
-.as-caption {
-  display: grid;
-  grid-template-columns: 40px 1fr;
-  column-gap: 14px;
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid var(--line);
+.about-mission__col {
+  padding: 0 32px;
 }
-
-.as-caption__num {
-  font: 400 12px/1.4 var(--font-sans), sans-serif;
-  letter-spacing: .06em;
-  color: var(--orange-600);
+.about-mission__col:first-child {
+  padding-left: 0;
 }
-
-.as-caption__title {
-  font: 600 13px/1.4 var(--font-sans), sans-serif;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  color: var(--text-primary);
+.about-mission__col:last-child {
+  padding-right: 0;
 }
-
-.as-caption__desc {
-  grid-column: 2;
-  margin-top: 4px;
-  font: 400 13px/1.5 var(--font-sans), sans-serif;
-  color: var(--text-secondary);
+.about-mission__col + .about-mission__col {
+  border-left: 1px solid var(--color-border);
 }
-
-.about-story figure + figure {
-  margin-top: 48px;
-}
-
-/* ── 8. Ключевое отличие — editorial classification ── */
-.about-due {
-  padding: 40px 0 120px;
-  background: var(--bg-canvas);
-}
-
-.about-due__grid {
-  display: grid;
-  grid-template-columns: .85fr 1.15fr;
-  gap: 72px;
-  align-items: start;
-}
-
-.about-due__intro {
-  position: sticky;
-  top: 120px;
-}
-
-.about-due__desc {
-  margin-top: 24px;
-  font: 400 17px/1.62 var(--font-sans), sans-serif;
-  color: var(--text-secondary);
-}
-
-.due-list {
-  border-bottom: 1px solid var(--line);
-}
-
-.due-row {
-  display: grid;
-  grid-template-columns: 72px 14px 1fr;
-  align-items: baseline;
-  gap: 20px;
-  width: 100%;
-  padding: 22px 0;
-  border: 0;
-  border-top: 1px solid var(--line);
-  background: transparent;
-  text-align: left;
-  cursor: pointer;
-  transition: transform .3s var(--ease);
-}
-
-.due-row:hover {
-  transform: translateX(6px);
-}
-
-.due-row__num {
-  font: 400 12px/1 var(--font-sans), sans-serif;
-  letter-spacing: .06em;
-  color: var(--text-tertiary);
-  transition: color .3s var(--ease);
-}
-
-.due-row:hover .due-row__num,
-.due-row.is-active .due-row__num {
-  color: var(--orange-600);
-}
-
-.due-row__marker {
-  position: relative;
-  width: 12px;
-  height: 12px;
-  margin-top: 6px;
-}
-
-.due-row__marker::before,
-.due-row__marker::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  background: var(--orange-600);
-  transition: transform .3s var(--ease), opacity .3s var(--ease);
-}
-
-/* короткая линия — базовое состояние */
-.due-row__marker::before {
-  width: 10px;
-  height: 1.5px;
-  border-radius: 1px;
-  transform: translate(-50%, -50%);
-  opacity: .4;
-}
-
-/* вертикальная линия «+» — появляется на hover/active */
-.due-row__marker::after {
-  width: 1.5px;
-  height: 10px;
-  border-radius: 1px;
-  transform: translate(-50%, -50%) scaleY(0);
-  opacity: 0;
-}
-
-.due-row:hover .due-row__marker::before,
-.due-row.is-active .due-row__marker::before {
-  opacity: 1;
-}
-
-.due-row:hover .due-row__marker::after,
-.due-row.is-active .due-row__marker::after {
-  transform: translate(-50%, -50%) scaleY(1);
-  opacity: 1;
-}
-
-.due-row__title {
-  font: 500 19px/1.4 var(--font-sans), sans-serif;
-  color: var(--text-secondary);
-  transition: color .3s var(--ease);
-}
-
-.due-row:hover .due-row__title {
-  color: var(--text-primary);
-}
-
-.due-row.is-active .due-row__title {
-  color: var(--text-primary);
-  font-weight: 600;
-}
-
-/* Зона пояснения — резервирует место под будущее описание.
-   Пустая: только мягкое расширение строки по наведению/клику. */
-.due-row__body {
-  display: block;
-  min-width: 0;
-}
-
-.due-row__hint {
-  display: block;
-  max-height: 0;
-  opacity: 0;
-  overflow: hidden;
-  transition:
-    max-height .35s var(--ease),
-    opacity .35s var(--ease),
-    margin-top .35s var(--ease);
-}
-
-.due-row:hover .due-row__hint,
-.due-row.is-active .due-row__hint {
-  max-height: 28px;
-  margin-top: 10px;
-  opacity: 1;
-}
-
-/* ── 9. Due diligence — основа нашей методологии ── */
-.about-due__statement {
-  margin-top: 72px;
-  padding-top: 32px;
-  border-top: 1px solid var(--line);
-  font: 600 clamp(20px, 2.4vw, 28px)/1.2 var(--font-display), serif;
-  letter-spacing: -.01em;
-  color: var(--text-primary);
-}
-
-/* ── 10. Команда — люди, которые ведут экспедицию ── */
-.about-team {
-  padding: 100px 0 120px;
-  background: var(--bg-surface);
-}
-
-.about-team__roster {
-  display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 72px;
+.mission-head {
+  display: flex;
   align-items: center;
-  margin-top: 56px;
+  gap: 14px;
+}
+/* Заглушка иконки — пунктирный слот 28×28; когда вставишь SVG,
+   он встанет в тот же бокс (правило ниже) */
+.mission-icon {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  display: inline-grid;
+  place-items: center;
+  border: 1px dashed rgba(26, 26, 26, .3);
+  border-radius: 6px;
+  color: var(--color-text-primary);
+  opacity: .8;
+}
+.mission-icon svg {
+  width: 28px;
+  height: 28px;
+  stroke-width: 1.25;
+  fill: none;
+}
+.mission-title {
+  font: 600 18px/1.2 var(--font-display), serif;
+  color: var(--color-text-primary);
+}
+.mission-desc {
+  margin-top: 14px;
+  font: 400 13.5px/1.6 var(--font-sans), sans-serif;
+  color: var(--color-text-secondary);
 }
 
-.about-team__photo {
-  position: relative;
-  aspect-ratio: 4 / 5;
-  overflow: hidden;
+@media (max-width: 1024px) {
+  .about-hero__grid {
+    padding-inline: 24px;
+    min-height: 480px;
+  }
+  /* На мобильных скетч — фоном на всю секцию, текст поверх */
+  .about-hero__bgpaint {
+    left: 0;
+  }
+  .about-hero__bgpaint::after {
+    background: linear-gradient(
+      180deg,
+      rgba(249, 238, 229, .55) 0%,
+      rgba(249, 238, 229, .15) 55%,
+      rgba(249, 238, 229, 0) 100%
+    );
+  }
+  .about-hero__sketch {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .about-hero__seal {
+    width: 96px;
+    height: 96px;
+    top: 24px;
+    right: 24px;
+  }
+  .about-mission__grid {
+    grid-template-columns: 1fr 1fr;
+    padding: 48px 24px;
+  }
+  .about-mission__col {
+    padding: 0 24px;
+  }
+  .about-mission__col:nth-child(odd) {
+    border-left: 0;
+  }
+  .about-mission__col:nth-child(even) {
+    border-left: 1px solid var(--color-border);
+  }
+  .about-mission__col:nth-child(n+3) {
+    border-top: 1px solid var(--color-border);
+    margin-top: 32px;
+    padding-top: 32px;
+  }
+}
+
+/* ── Тёмная полоса «Ключевое отличие FExperience» (9 колонок, без карточек) ── */
+.about-diff {
+  background: var(--color-paper-dark); /* #272421 */
+  padding: 80px 0 72px;
+}
+.about-diff__head {
+  max-width: 1600px;
+  margin: 0 auto 48px;
+  padding-inline: 48px;
+}
+.about-diff__eyebrow {
+  margin: 0;
+  font: 600 12px var(--font-sans), sans-serif;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--color-brand-600);
+}
+.about-diff__title {
+  margin: 27px 0 0;
+  font: 600 clamp(28px, 2.6vw, 40px)/1.2 var(--font-display), serif;
+  color: #FFF6EE;
+}
+.about-diff__title .accent {
+  color: var(--color-brand-600);
+}
+.about-diff__grid {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding-inline: 48px;
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+}
+.about-diff__col {
+  padding: 0 14px;
+  border-left: 1px solid rgba(255, 255, 255, .08);
+}
+.about-diff__col:first-child {
+  border-left: 0;
+  padding-left: 0;
+}
+.about-diff__col:last-child {
+  padding-right: 0;
+}
+.diff-icon {
+  width: 28px;
+  height: 28px;
+  stroke-width: 1.25;
+  fill: none;
+  color: rgba(255, 246, 238, .85);
+  margin-bottom: 16px;
+  transition: color .3s;
+}
+.diff-title {
+  font: 600 16px/1.25 var(--font-display), serif;
+  color: #FFF6EE;
+}
+.diff-desc {
+  margin-top: 8px;
+  font: 400 12px/1.55 var(--font-sans), sans-serif;
+  color: rgba(255, 246, 238, .55);
+}
+.about-diff__col:hover .diff-icon {
+  color: var(--color-brand-600);
+}
+@media (max-width: 1024px) {
+  .about-diff__head,
+  .about-diff__grid {
+    padding-inline: 32px;
+  }
+  .about-diff__grid {
+    grid-template-columns: repeat(3, 1fr);
+    row-gap: 40px;
+  }
+  .about-diff__col {
+    padding: 0 24px;
+  }
+  .about-diff__col:nth-child(3n+1) {
+    border-left: 0;
+    padding-left: 0;
+  }
+}
+@media (max-width: 640px) {
+  .about-diff {
+    padding: 56px 0;
+  }
+  .about-diff__head,
+  .about-diff__grid {
+    padding-inline: 24px;
+  }
+  .about-diff__grid {
+    grid-template-columns: 1fr;
+  }
+  .about-diff__title {
+    font-size: 26px;
+  }
+  .about-diff__col {
+    border-left: 0;
+    padding: 0;
+  }
+  .about-diff__col + .about-diff__col {
+    border-top: 1px solid rgba(255, 255, 255, .08);
+    padding: 24px 0;
+  }
+}
+
+/* ── 5. Наша методология: тезис → checklist → фото ── */
+.about-method {
+  background: var(--color-canvas); /* основной фон сайта */
+  padding: 60px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+.about-method__grid {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding-inline: 56px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.1fr;
+  gap: 56px;
+  align-items: center;
+}
+.method-eyebrow {
+  margin: 0;
+  font: 600 12px var(--font-sans), sans-serif;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--color-brand-600);
+}
+.method-title {
+  margin: 27px 0 0;
+  font: 600 clamp(28px, 2.6vw, 40px)/1.2 var(--font-display), serif;
+  color: var(--color-text-primary);
+}
+.method-title .accent {
+  color: var(--color-brand-600);
+}
+.method-text {
+  max-width: 380px;
+  margin-top: 20px;
+  font: 400 14.5px/1.65 var(--font-sans), sans-serif;
+  color: var(--color-text-secondary);
+}
+.method-checklist {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.method-checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.method-checklist svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 1.5;
+  fill: none;
+  color: var(--color-brand-600);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.method-checklist p {
+  margin: 0;
+  font: 400 14.5px/1.45 var(--font-sans), sans-serif;
+  color: var(--color-text-primary);
+}
+.method-photo img {
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+  border-radius: 21px;
+}
+
+@media (max-width: 1024px) {
+  .about-method__grid {
+    grid-template-columns: 1fr 1fr;
+    padding-inline: 32px;
+    gap: 40px;
+  }
+  .method-photo {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 640px) {
+  .about-method {
+    padding: 56px 0;
+  }
+  .about-method__grid {
+    grid-template-columns: 1fr;
+    padding-inline: 24px;
+    gap: 32px;
+  }
+  .method-title {
+    font-size: 26px;
+  }
+}
+
+/* ── 10. Наши эксперты — деловой roster без слайдера (3→5 без правок) ── */
+.about-experts {
+  background: var(--color-canvas);
+  padding: 96px 0;
+}
+.about-experts__container {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding-inline: 64px;
+}
+.about-experts__eyebrow {
+  margin: 0;
+  font: 600 12px var(--font-sans), sans-serif;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--color-brand-600);
+}
+.about-experts__title {
+  margin: 14px 0 40px;
+  font: 600 clamp(28px, 2.6vw, 40px)/1.2 var(--font-display), serif;
+  color: var(--color-text-primary);
+}
+.about-experts-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: center;
+}
+.about-expert-card {
+  width: calc((100% - 48px) / 3);
+  display: flex;
+  align-items: stretch;
   border-radius: 12px;
-  border: 1px solid rgba(35, 30, 25, .1);
-  background: var(--bg-elevated);
-  box-shadow: 0 20px 60px rgba(70, 45, 30, .05);
+  overflow: hidden;
+  background: var(--color-surface);
 }
-
-.at-photo__slide {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  transition: opacity .6s var(--ease);
+.about-expert-card__photo {
+  position: relative;
+  flex: 0 0 60%;
+  min-height: 300px;
 }
-
-.at-photo__slide.is-active {
-  opacity: 1;
-}
-
-.at-photo__slide img {
+.about-expert-card__photo img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform .4s var(--ease);
 }
-
-.at-photo__badge {
+.about-expert-card:hover .about-expert-card__photo img {
+  transform: scale(1.03);
+}
+.about-forbes-badge {
   position: absolute;
-  top: 16px;
-  left: 16px;
-  z-index: 2;
-  padding: 8px 14px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, .28);
-  background: rgba(18, 18, 18, .3);
-  backdrop-filter: blur(18px) saturate(115%);
-  font: 600 11px/1 var(--font-sans), sans-serif;
-  letter-spacing: .06em;
+  top: 12px;
+  left: 12px;
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  background: #1A1A1A;
+  border-radius: var(--radius-pill);
+  font: 600 11px var(--font-sans), sans-serif;
+  letter-spacing: .04em;
   text-transform: uppercase;
   color: #fff;
 }
-
-.about-team__list {
-  list-style: none;
-  border-bottom: 1px solid var(--line);
+.about-expert-card__panel {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 18px 16px 16px;
+  display: flex;
+  flex-direction: column;
+}
+.about-expert-meta {
+  margin: 0;
+  font: 600 11px var(--font-sans), sans-serif;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+}
+.about-expert-name {
+  margin: 8px 0 0;
+  font: 600 18px/1.25 var(--font-display), serif;
+  color: var(--color-text-primary);
+}
+.about-expert-role {
+  margin: 8px 0 0;
+  font: 400 12.5px/1.55 var(--font-sans), sans-serif;
+  color: var(--color-text-secondary);
+}
+.about-expert-linkedin {
+  margin-top: auto;
+  align-self: flex-end;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #1A1A1A;
+  color: #fff;
+  display: grid;
+  place-items: center;
 }
 
-.about-team__list:has(.at-member.is-active) .at-member:not(.is-active) {
-  opacity: .55;
+@media (max-width: 1024px) {
+  .about-experts__container {
+    padding-inline: 32px;
+  }
+  .about-expert-card {
+    width: calc((100% - 24px) / 2);
+  }
 }
-
-.at-member {
-  display: block;
-  width: 100%;
-  padding: 24px 0;
-  border: 0;
-  border-bottom: 1px solid var(--line);
-  background: transparent;
-  text-align: left;
-  cursor: pointer;
-  transition: opacity .3s var(--ease);
-}
-
-.at-member__name {
-  display: block;
-  font: 600 26px/1.2 var(--font-display), serif;
-  color: var(--text-secondary);
-  transition: color .3s var(--ease);
-}
-
-.at-member__role {
-  display: block;
-  margin-top: 6px;
-  font: 400 14px/1.5 var(--font-sans), sans-serif;
-  color: var(--text-tertiary);
-}
-
-.at-member:hover .at-member__name,
-.at-member.is-active .at-member__name {
-  color: var(--orange-600);
+@media (max-width: 640px) {
+  .about-experts {
+    padding: 56px 0;
+  }
+  .about-experts__container {
+    padding-inline: 24px;
+  }
+  .about-expert-card {
+    width: 100%;
+    flex-direction: column;
+  }
+  .about-expert-card__photo {
+    flex: none;
+    aspect-ratio: 4 / 3;
+    min-height: 0;
+  }
 }
 
 /* ── Responsive ── */
-@media (max-width: 1024px) {
-  .about-manifest__content {
-    width: min(680px, 70%);
-  }
-
-  .about-due__grid {
-    grid-template-columns: 1fr;
-    gap: 48px;
-  }
-
-  .about-due__intro {
-    position: static;
-  }
-}
-
-@media (max-width: 900px) {
-  .about-manifest__inner {
-    width: min(100% - 40px, 680px);
-    min-height: auto;
-    padding-bottom: 60px;
-  }
-
-  .about-manifest__content {
-    width: auto;
-    margin-left: 34px;
-  }
-
-  .about-manifest__illustration {
-    position: relative;
-    top: auto;
-    right: auto;
-    width: 55%;
-    height: 340px;
-    margin-top: -30px;
-    margin-left: 20px;
-    opacity: .18;
-  }
-
-  .as-row {
-    grid-template-columns: 1fr;
-  }
-
-  .about-story figure + figure {
-    margin-top: 40px;
-  }
-
-  .about-team__roster {
-    grid-template-columns: 1fr;
-    gap: 40px;
-  }
-}
-
 @media (max-width: 640px) {
   .about-hero {
-    padding: 84px 0 64px;
+    padding: 100px 0 48px;
+  }
+
+  .about-hero__grid {
+    padding-inline: 24px;
+    gap: 32px;
   }
 
   .about-hero__title {
-    font-size: clamp(30px, 8vw, 38px);
+    font-size: 44px;
   }
 
-  .about-hero__lead {
-    font-size: 16px;
-  }
-
-  .about-manifest {
-    padding: 80px 0 96px;
-  }
-
-  .about-manifest__title {
-    font-size: clamp(34px, 8vw, 48px);
-  }
-
-  .about-photoessay,
-  .about-due,
-  .about-team {
-    padding: 72px 0;
-  }
-
-  .due-row {
-    grid-template-columns: 56px 10px 1fr;
-    gap: 14px;
-    padding: 18px 0;
-  }
-
-  .at-member__name {
+  .about-hero__statement {
     font-size: 20px;
+  }
+
+  .about-mission__grid {
+    grid-template-columns: 1fr;
+    padding: 40px 24px;
+  }
+  .about-mission__col {
+    margin-top: 0;
+    padding: 24px 0;
+  }
+  .about-mission__col:first-child {
+    padding-top: 0;
+  }
+  .about-mission__col:last-child {
+    padding-bottom: 0;
+  }
+  .about-mission__col + .about-mission__col {
+    border-left: 0;
+    border-top: 1px solid var(--color-border);
   }
 }
 
@@ -3455,7 +3618,7 @@ body::before {
 .dir-intro__title {
   margin: 0;
   max-width: 820px;
-  font: 700 clamp(38px, 5vw, 54px)/1.05 "Playfair Display", Georgia, serif;
+  font: 700 clamp(38px, 5vw, 54px)/1.05 var(--font-display), Georgia, serif;
   letter-spacing: -.025em;
   color: var(--text-primary);
 }
@@ -3554,7 +3717,7 @@ body::before {
   z-index: 2;
   display: block;
   margin-top: 56px;
-  font: 600 clamp(20px, 2vw, 28px)/1.05 var(--font-display), "Playfair Display", Georgia, serif;
+  font: 600 clamp(20px, 2vw, 28px)/1.05 var(--font-display), Georgia, serif;
   letter-spacing: -.015em;
   color: var(--text-primary);
   transition: color .25s ease;
@@ -3763,7 +3926,7 @@ body::before {
 
 .dir-card__title {
   margin: 8px 0 0;
-  font: 600 clamp(24px, 2.4vw, 34px)/1.08 var(--font-display), "Playfair Display", Georgia, serif;
+  font: 600 clamp(24px, 2.4vw, 34px)/1.08 var(--font-display), Georgia, serif;
   letter-spacing: -.02em;
   color: var(--text-primary);
 }
@@ -3842,7 +4005,7 @@ body::before {
 
 .dir-editorial__title {
   margin: 0;
-  font: 600 24px/1.15 var(--font-display), "Playfair Display", Georgia, serif;
+  font: 600 24px/1.15 var(--font-display), Georgia, serif;
   letter-spacing: -.01em;
   color: var(--text-primary);
   transition: color .25s ease;
@@ -3901,7 +4064,7 @@ body::before {
 
 .dir-archive__title {
   margin: 0;
-  font: 600 20px/1.2 var(--font-display), "Playfair Display", Georgia, serif;
+  font: 600 20px/1.2 var(--font-display), Georgia, serif;
   letter-spacing: -.01em;
   color: var(--text-secondary);
 }
@@ -3925,7 +4088,7 @@ body::before {
 
 .dir-outro__phrase {
   margin: 0;
-  font: 500 clamp(26px, 3.4vw, 40px)/1.2 var(--font-display), "Playfair Display", Georgia, serif;
+  font: 500 clamp(26px, 3.4vw, 40px)/1.2 var(--font-display), Georgia, serif;
   letter-spacing: -.02em;
   color: var(--text-primary);
   max-width: 720px;
@@ -4095,7 +4258,7 @@ body::before {
 .detail-hero__title {
   margin: 0 0 32px;
   max-width: 900px;
-  font: 700 clamp(32px, 5vw, 52px)/1.1 "Playfair Display", Georgia, serif;
+  font: 700 clamp(32px, 5vw, 52px)/1.1 var(--font-display), Georgia, serif;
   letter-spacing: -.01em;
   color: #fff;
 }
@@ -4300,7 +4463,7 @@ body::before {
 }
 
 .map-continent__plaque-title {
-  font: 600 18px/1.2 var(--font-display), "Playfair Display", Georgia, serif;
+  font: 600 18px/1.2 var(--font-display), Georgia, serif;
   color: var(--text-primary);
 }
 
@@ -4323,7 +4486,7 @@ body::before {
 
 .included-section__title {
   margin: 0;
-  font: 700 clamp(30px, 4vw, 44px)/1.1 "Playfair Display", Georgia, serif;
+  font: 700 clamp(30px, 4vw, 44px)/1.1 var(--font-display), Georgia, serif;
   letter-spacing: -.02em;
   color: var(--text-primary);
 }
@@ -4369,7 +4532,7 @@ body::before {
   border: 1px solid rgba(255, 255, 255, .74);
   border-radius: 20px;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9), 0 18px 60px rgba(40, 25, 15, .12);
-  font: 600 20px/1.3 "Playfair Display", Georgia, serif;
+  font: 600 20px/1.3 var(--font-display), Georgia, serif;
   color: var(--text-primary);
 }
 
@@ -4387,7 +4550,7 @@ body::before {
   position: absolute;
   left: 24px;
   bottom: 24px;
-  font: 600 22px/1.2 var(--font-display), "Playfair Display", Georgia, serif;
+  font: 600 22px/1.2 var(--font-display), Georgia, serif;
   color: #fff;
   text-shadow: 0 2px 16px rgba(0, 0, 0, .35);
 }
@@ -4467,7 +4630,7 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: center;
-  font: 700 22px/1 var(--font-display), "Playfair Display", Georgia, serif;
+  font: 700 22px/1 var(--font-display), Georgia, serif;
   color: #fff;
   position: relative;
   z-index: 1;
@@ -4492,7 +4655,7 @@ body::before {
 
 .program-timeline__title {
   margin: 0 0 12px;
-  font: 600 20px/1.3 var(--font-display), "Playfair Display", Georgia, serif;
+  font: 600 20px/1.3 var(--font-display), Georgia, serif;
   color: var(--text-primary);
 }
 
@@ -4523,7 +4686,7 @@ body::before {
 
 .experts-section__title {
   margin: 0;
-  font: 700 clamp(30px, 4vw, 44px)/1.1 "Playfair Display", Georgia, serif;
+  font: 700 clamp(30px, 4vw, 44px)/1.1 var(--font-display), Georgia, serif;
   letter-spacing: -.02em;
   color: var(--text-primary);
 }
@@ -4614,7 +4777,7 @@ body::before {
   align-items: center;
   gap: 12px;
   margin: 0 0 24px;
-  font: 700 24px/1.2 var(--font-display), "Playfair Display", Georgia, serif;
+  font: 700 24px/1.2 var(--font-display), Georgia, serif;
   color: var(--text-primary);
 }
 
@@ -4736,7 +4899,7 @@ body::before {
 
 .form-panel__title {
   margin: 0 0 8px;
-  font: 600 28px/1.2 var(--font-display), "Playfair Display", Georgia, serif;
+  font: 600 28px/1.2 var(--font-display), Georgia, serif;
   color: var(--text-primary);
 }
 
@@ -4849,7 +5012,7 @@ body::before {
 
 .detail-form-success__title {
   margin: 0 0 6px;
-  font: 600 22px/1.2 var(--font-display), "Playfair Display", Georgia, serif;
+  font: 600 22px/1.2 var(--font-display), Georgia, serif;
   color: var(--text-primary);
 }
 
@@ -4882,7 +5045,7 @@ body::before {
 
 .lead-panel__title {
   margin: 0 0 10px;
-  font: 600 28px/1.2 var(--font-display), "Playfair Display", Georgia, serif;
+  font: 600 28px/1.2 var(--font-display), Georgia, serif;
   color: var(--text-primary);
 }
 
@@ -4941,7 +5104,7 @@ body::before {
 .related-card__title {
   position: relative;
   z-index: 1;
-  font: 600 22px/1.2 var(--font-display), "Playfair Display", Georgia, serif;
+  font: 600 22px/1.2 var(--font-display), Georgia, serif;
   color: #fff;
 }
 
@@ -4968,7 +5131,7 @@ body::before {
 }
 
 .recap-stat__num {
-  font: 700 40px/1 var(--font-display), "Playfair Display", Georgia, serif;
+  font: 700 40px/1 var(--font-display), Georgia, serif;
   color: var(--text-primary);
 }
 
@@ -4985,7 +5148,7 @@ body::before {
 
 .recap-reviews__title {
   margin: 0 0 32px;
-  font: 700 clamp(28px, 4vw, 40px)/1.1 "Playfair Display", Georgia, serif;
+  font: 700 clamp(28px, 4vw, 40px)/1.1 var(--font-display), Georgia, serif;
   letter-spacing: -.02em;
   color: var(--text-primary);
 }
@@ -4998,7 +5161,7 @@ body::before {
 
 .recap-review__text {
   margin: 0 0 20px;
-  font: 400 18px/1.7 var(--font-display), "Playfair Display", Georgia, serif;
+  font: 400 18px/1.7 var(--font-display), Georgia, serif;
   color: var(--text-primary);
   max-width: 900px;
 }
@@ -5197,7 +5360,7 @@ body::before {
 
 .exp-hero__title {
   margin: 0 0 20px;
-  font: 700 clamp(56px, 9vw, 118px)/.95 "Playfair Display", Georgia, serif;
+  font: 700 clamp(56px, 9vw, 118px)/.95 var(--font-display), Georgia, serif;
   letter-spacing: -.03em;
   color: #fff;
   text-shadow: 0 4px 40px rgba(0, 0, 0, .35);
@@ -5391,7 +5554,7 @@ body::before {
 
 .exp-context__headline {
   margin: 0 0 24px;
-  font: 700 clamp(36px, 4.5vw, 52px)/1.08 "Playfair Display", Georgia, serif;
+  font: 700 clamp(36px, 4.5vw, 52px)/1.08 var(--font-display), Georgia, serif;
   letter-spacing: -.02em;
   color: var(--text-primary);
 }
@@ -5413,7 +5576,7 @@ body::before {
 }
 
 .exp-context__fact-value {
-  font: 700 clamp(40px, 5vw, 56px)/1 var(--font-display), "Playfair Display", Georgia, serif;
+  font: 700 clamp(40px, 5vw, 56px)/1 var(--font-display), Georgia, serif;
   color: var(--orange-600);
 }
 
@@ -5446,7 +5609,7 @@ body::before {
 
 .exp-route__headline {
   margin: 0 0 24px;
-  font: 700 clamp(36px, 4.5vw, 52px)/1.08 "Playfair Display", Georgia, serif;
+  font: 700 clamp(36px, 4.5vw, 52px)/1.08 var(--font-display), Georgia, serif;
   letter-spacing: -.02em;
   color: var(--text-primary);
 }
@@ -5481,7 +5644,7 @@ body::before {
 
 .exp-route__city {
   margin: 0 0 8px;
-  font: 600 22px/1.2 var(--font-display), "Playfair Display", Georgia, serif;
+  font: 600 22px/1.2 var(--font-display), Georgia, serif;
   color: var(--text-primary);
 }
 
@@ -5505,7 +5668,7 @@ body::before {
 
 .exp-experience__headline {
   margin: 0 0 20px;
-  font: 700 clamp(36px, 4.5vw, 52px)/1.08 "Playfair Display", Georgia, serif;
+  font: 700 clamp(36px, 4.5vw, 52px)/1.08 var(--font-display), Georgia, serif;
   letter-spacing: -.02em;
   color: var(--text-primary);
 }
@@ -5569,7 +5732,7 @@ body::before {
 
 .exp-program__headline {
   margin: 0;
-  font: 700 clamp(36px, 4.5vw, 52px)/1.08 "Playfair Display", Georgia, serif;
+  font: 700 clamp(36px, 4.5vw, 52px)/1.08 var(--font-display), Georgia, serif;
   letter-spacing: -.02em;
   color: var(--text-primary);
 }
@@ -5607,7 +5770,7 @@ body::before {
 
 .exp-program__title {
   margin: 0 0 18px;
-  font: 600 clamp(24px, 2.6vw, 32px)/1.2 var(--font-display), "Playfair Display", Georgia, serif;
+  font: 600 clamp(24px, 2.6vw, 32px)/1.2 var(--font-display), Georgia, serif;
   color: var(--text-primary);
 }
 
@@ -5642,7 +5805,7 @@ body::before {
 .exp-people__headline {
   margin: 0;
   max-width: 720px;
-  font: 700 clamp(36px, 4.5vw, 52px)/1.08 "Playfair Display", Georgia, serif;
+  font: 700 clamp(36px, 4.5vw, 52px)/1.08 var(--font-display), Georgia, serif;
   letter-spacing: -.02em;
   color: var(--text-primary);
 }
@@ -5726,7 +5889,7 @@ body::before {
 
 .exp-result__headline {
   margin: 0;
-  font: 700 clamp(36px, 4.5vw, 52px)/1.08 "Playfair Display", Georgia, serif;
+  font: 700 clamp(36px, 4.5vw, 52px)/1.08 var(--font-display), Georgia, serif;
   letter-spacing: -.02em;
   color: var(--text-primary);
 }
@@ -5747,7 +5910,7 @@ body::before {
 }
 
 .exp-result__value {
-  font: 700 clamp(40px, 5vw, 60px)/1 var(--font-display), "Playfair Display", Georgia, serif;
+  font: 700 clamp(40px, 5vw, 60px)/1 var(--font-display), Georgia, serif;
   color: var(--orange-600);
 }
 
@@ -5899,7 +6062,7 @@ body::before {
 
 .exp-final__title {
   margin: 0 0 20px;
-  font: 700 clamp(32px, 4vw, 46px)/1.1 "Playfair Display", Georgia, serif;
+  font: 700 clamp(32px, 4vw, 46px)/1.1 var(--font-display), Georgia, serif;
   letter-spacing: -.02em;
   color: var(--text-primary);
 }

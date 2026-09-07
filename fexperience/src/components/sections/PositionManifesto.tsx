@@ -5,6 +5,7 @@ export function PositionManifesto() {
         <div className="position-section__line" aria-hidden="true" />
 
         <div className="position-section__content">
+          <span className="eyebrow-dash" aria-hidden="true" />
           <div className="position-section__label" id="position-title">
             НАША ПОЗИЦИЯ
           </div>
@@ -19,11 +20,11 @@ export function PositionManifesto() {
             FExperience by Forbes Russia
           </div>
         </div>
+      </div>
 
-        <div className="position-section__illustration" aria-hidden="true">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/images/position-illustration.webp" alt="" />
-        </div>
+      <div className="position-section__illustration" aria-hidden="true">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/images/position-illustration.webp" alt="" />
       </div>
     </section>
   );
