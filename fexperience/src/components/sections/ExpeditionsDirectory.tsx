@@ -1,228 +1,250 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { ArrowUpRight } from 'lucide-react';
+import { useScrollReveal } from '@/hooks/useScrollReveal';
 import { expeditions } from '@/data/expeditions';
-import { regions } from '@/data/regions';
 import type { Expedition, ExpeditionRegion } from '@/types/expedition';
 
-const REGION_META: Record<ExpeditionRegion, string> = {
+const REGION_PILLS: { id: RegionFilter; label: string }[] = [
+  { id: 'all', label: 'Все регионы' },
+  { id: 'africa', label: 'Африка' },
+  { id: 'asia', label: 'Азия' },
+  { id: 'latam', label: 'Латинская Америка' },
+  { id: 'russia', label: 'Россия' },
+];
+
+/* Фирменная круглая печать — тот же стандарт, что на главной и About */
+function DirectorySeal() {
+  return (
+    <svg
+      viewBox="0 0 200 200"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="directory-seal__svg"
+      aria-hidden="true"
+    >
+      <defs>
+        <path
+          id="directory-seal-circle"
+          d="M 100,100 m -74,0 a 74,74 0 1,1 148,0 a 74,74 0 1,1 -148,0"
+        />
+      </defs>
+      <circle
+        cx="100"
+        cy="100"
+        r="91"
+        stroke="rgba(26,26,26,.55)"
+        strokeWidth="1"
+        fill="none"
+      />
+      <text
+        fill="rgba(26,26,26,.55)"
+        fontSize="10"
+        letterSpacing="1.8"
+        style={{ fontFamily: 'var(--font-sans), sans-serif' }}
+      >
+        <textPath href="#directory-seal-circle" startOffset="0%">
+          FORBES FEXPERIENCE · FORBES FEXPERIENCE · FORBES FEXPERIENCE ·
+        </textPath>
+      </text>
+      <text
+        x="100"
+        y="122"
+        textAnchor="middle"
+        fontSize="64"
+        fontWeight="700"
+        fill="var(--color-brand-600)"
+        style={{ fontFamily: 'var(--font-display), serif' }}
+      >
+        F
+      </text>
+    </svg>
+  );
+}
+
+const REGION_RU: Record<ExpeditionRegion, string> = {
   africa: 'Африка',
   asia: 'Азия',
-  latam: 'LATAM',
+  latam: 'Латинская Америка',
   russia: 'Россия',
 };
 
-const STATUS_EDITORIAL = {
-  active: 'АКТИВНА',
-  upcoming: 'СКОРО',
-  completed: 'ЗАВЕРШЕНО',
-} as const;
-
 type RegionFilter = 'all' | ExpeditionRegion;
 
-function formatDates(dates: string) {
-  return dates.replace(/-/g, '—');
+const MONTHS_GEN = [
+  'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+  'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря',
+];
+
+/** Дата active-карточки из startDate/endDate: «15–21 ноября 2026» */
+function formatRange(expedition: Expedition): string {
+  if (!expedition.startDate || !expedition.endDate) return expedition.dates || '';
+  const start = new Date(expedition.startDate);
+  const end = new Date(expedition.endDate);
+  if (
+    start.getMonth() === end.getMonth() &&
+    start.getFullYear() === end.getFullYear()
+  ) {
+    return `${start.getDate()}–${end.getDate()} ${MONTHS_GEN[start.getMonth()]} ${start.getFullYear()}`;
+  }
+  return `${start.getDate()} ${MONTHS_GEN[start.getMonth()]} – ${end.getDate()} ${MONTHS_GEN[end.getMonth()]} ${end.getFullYear()}`;
 }
 
 export function ExpeditionsDirectory() {
+  useScrollReveal();
   const [regionFilter, setRegionFilter] = useState<RegionFilter>('all');
-  const [industryFilter, setIndustryFilter] = useState<string>('all');
 
-  const industries = useMemo(() => {
-    const set = new Set<string>();
-    expeditions.forEach((e) => (e.industries ?? []).forEach((i) => set.add(i)));
-    return Array.from(set);
-  }, []);
+  // Донаблюдение карточек после каждой смены фильтра: перерисованные
+  // узлы обязаны попасть под IntersectionObserver заново
+  useEffect(() => {
+    const targets = Array.from(
+      document.querySelectorAll('.directory-grid .fade-up:not(.visible)'),
+    );
+    if (targets.length === 0) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: '-60px 0px' },
+    );
+    targets.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [regionFilter]);
 
   const filtered = useMemo(() => {
     return expeditions.filter((e) => {
-      const byRegion = regionFilter === 'all' || e.region === regionFilter;
-      const byIndustry = industryFilter === 'all' || (e.industries ?? []).includes(industryFilter);
-      return byRegion && byIndustry;
+      return regionFilter === 'all' || e.region === regionFilter;
     });
-  }, [regionFilter, industryFilter]);
+  }, [regionFilter]);
 
-  const active = filtered.filter((e) => e.status === 'active');
+  // Единая сетка: active по дате → upcoming порядком данных; completed вне сетки
+  const active = filtered
+    .filter((e) => e.status === 'active')
+    .sort((a, b) => (a.startDate ?? '').localeCompare(b.startDate ?? ''));
   const upcoming = filtered.filter((e) => e.status === 'upcoming');
-  const completed = filtered.filter((e) => e.status === 'completed');
-
-  // Одна большая экспедиция + вторичные
-  const featured = active.find((e) => e.slug === 'south-africa') ?? active[0];
-  const secondaryActive = active.filter((e) => e.slug !== featured?.slug);
+  const cards = [...active, ...upcoming];
 
   return (
     <div className="directory">
-      {/* 1. INTRO — без hero-image */}
-      <section className="dir-intro">
-        <div className="container">
-          <span className="dir-label">Направления</span>
-          <h1 className="dir-intro__title">Бизнес-экспедиции с Forbes</h1>
-          <p className="dir-intro__sub">
-            Эксклюзивные программы бизнес-экспедиций FExperience разрабатываются с учетом специфики каждого региона.
-          </p>
+      {/* 1. HERO — текст слева, карта слоем до края окна (как скетч на About) */}
+      <section className="directory-hero">
+        <div className="directory-hero__bgpaint fade-up delay-2" aria-hidden="true">
+          <Image
+            src="/maps/cartaDirectoriaExpeditions.webp"
+            alt=""
+            fill
+            priority
+            quality={90}
+            sizes="70vw"
+            className="directory-map__image"
+          />
+        </div>
+        <div className="directory-hero__grid">
+          <div className="directory-hero__content">
+            <nav className="directory-breadcrumbs fade-up" aria-label="Хлебные крошки">
+              <Link href="/">Главная</Link>
+              {' / '}
+              <span aria-current="page">Директория экспедиций</span>
+            </nav>
+            <p className="directory-eyebrow fade-up delay-1">Направления</p>
+            <h1 className="directory-title fade-up delay-1">
+              <span className="block">Бизнес-экспедиции</span>
+              <span className="block">с Forbes</span>
+            </h1>
+            <p className="directory-subtitle fade-up delay-2">
+              Эксклюзивные программы бизнес-экспедиций FExperience разрабатываются с учетом специфики каждого региона.
+            </p>
+          </div>
+        </div>
+        <div className="directory-seal">
+          <DirectorySeal />
         </div>
       </section>
 
-      {/* 2. ГЕОГРАФИЯ — единая editorial-композиция */}
-      <section className="dir-geo" aria-label="География">
-        <div className="container">
-          <div className="dir-geo__head">
-            <span className="dir-label">География</span>
+      {/* 3. ФИЛЬТР РЕГИОНОВ — pills под Hero */}
+      <section className="directory-filter" aria-label="Фильтр по региону">
+        <div className="directory-filter__row">
+          {REGION_PILLS.map((pill) => (
             <button
+              key={pill.id}
               type="button"
-              className={`dir-geo__reset${regionFilter === 'all' ? ' is-idle' : ''}`}
-              onClick={() => setRegionFilter('all')}
+              className={`filter-pill${regionFilter === pill.id ? ' active' : ''}`}
+              onClick={() => setRegionFilter(pill.id)}
             >
-              Все регионы
+              {pill.label}
             </button>
-          </div>
+          ))}
+        </div>
+      </section>
 
-          <div className="dir-geo__grid">
-            {regions.map((region) => {
-              const isActive = regionFilter === region.id;
+      {/* 5. СТАТУС + ЕДИНАЯ СЕТКА */}
+      <section className="directory-catalog" aria-label="Экспедиции">
+        <div className="container">
+          {active.length > 0 && (
+            <div className="directory-status">
+              <span className="directory-status__title">Активные</span>
+              <span className="directory-status__count">
+                {String(active.length).padStart(2, '0')} — сейчас
+              </span>
+            </div>
+          )}
+
+          <div className="directory-grid">
+            {cards.map((expedition, index) => {
+              const isActive = expedition.status === 'active';
               return (
-                <button
-                  key={region.id}
-                  type="button"
-                  className={`geo-region geo-region--${region.id}${isActive ? ' is-active' : ''}`}
-                  onClick={() => setRegionFilter(isActive ? 'all' : region.id)}
+                <Link
+                  key={expedition.slug}
+                  href={`/expeditions/${expedition.slug}`}
+                  className={`exp-card fade-up delay-${(index % 6) + 1}`}
                 >
-                  <span className="geo-region__index">{region.index}</span>
-
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={region.mapAsset}
-                    alt=""
-                    aria-hidden="true"
-                    className="geo-region__map"
+                  <Image
+                    src={expedition.image}
+                    alt={expedition.title}
+                    fill
+                    sizes="(min-width: 1025px) 33vw, (min-width: 641px) 50vw, 100vw"
+                    className="exp-card__img"
                   />
-
-                  {region.markets.map((market) => (
-                    <span
-                      key={market.id}
-                      className={`geo-region__point${market.status === 'completed' ? ' geo-region__point--muted' : ''}`}
-                      style={{ left: `${market.x}%`, top: `${market.y}%` }}
-                    />
-                  ))}
-
-                  <span className="geo-region__name">{region.label}</span>
-                  <span className="geo-region__count">{region.directionCount} направления</span>
-                </button>
+                  <div className="exp-card__overlay" aria-hidden="true" />
+                  {isActive && (
+                    <span className="exp-card__badge">Активна</span>
+                  )}
+                  <div className="exp-card__content">
+                    {expedition.region && (
+                      <p className="exp-card__region">
+                        {REGION_RU[expedition.region]}
+                      </p>
+                    )}
+                    <h3 className="exp-card__name">{expedition.country}</h3>
+                    <div className="exp-card__foot">
+                      {isActive ? (
+                        <span className="exp-card__date">
+                          {formatRange(expedition)}
+                        </span>
+                      ) : (
+                        <span className="exp-card__date exp-card__date--soon">
+                          Скоро
+                        </span>
+                      )}
+                      <span className="exp-card__arrow" aria-hidden="true">
+                        <ArrowUpRight size={18} />
+                      </span>
+                    </div>
+                  </div>
+                </Link>
               );
             })}
           </div>
         </div>
       </section>
-
-      {/* 3. ФИЛЬТР РЕГИОНОВ — вторичный */}
-      <section className="dir-regions" aria-label="Быстрый фильтр по региону">
-        <div className="container">
-          <div className="dir-regions__row">
-            <button
-              type="button"
-              className={`dir-tab${regionFilter === 'all' ? ' is-active' : ''}`}
-              onClick={() => setRegionFilter('all')}
-            >
-              Все регионы
-            </button>
-            {(Object.keys(REGION_META) as ExpeditionRegion[]).map((region) => (
-              <button
-                key={region}
-                type="button"
-                className={`dir-tab${regionFilter === region ? ' is-active' : ''}`}
-                onClick={() => setRegionFilter(region)}
-              >
-                {REGION_META[region]}
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 4. ФИЛЬТР ОТРАСЛЕЙ — editorial index */}
-      <section className="dir-industry" aria-label="Фильтр по отрасли">
-        <div className="container">
-          <div className="dir-industry__scroll">
-            <div className="dir-industry__row">
-              <button
-                type="button"
-                className={`dir-index${industryFilter === 'all' ? ' is-active' : ''}`}
-                onClick={() => setIndustryFilter('all')}
-              >
-                Все отрасли
-              </button>
-              {industries.map((industry) => (
-                <button
-                  key={industry}
-                  type="button"
-                  className={`dir-index${industryFilter === industry ? ' is-active' : ''}`}
-                  onClick={() => setIndustryFilter(industry)}
-                >
-                  {industry}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 5. СЕЙЧАС — активные */}
-      {active.length > 0 && (
-        <section className="dir-now" aria-label="Активные экспедиции">
-          <div className="container">
-            <div className="dir-section-head">
-              <span className="dir-section-head__label">Активные</span>
-              <span className="dir-section-head__meta">
-                {String(active.length).padStart(2, '0')} — сейчас
-              </span>
-            </div>
-
-            {featured && <ExpeditionCard expedition={featured} featured />}
-
-            {secondaryActive.length > 0 && (
-              <div className="dir-now__secondary">
-                {secondaryActive.map((expedition) => (
-                  <ExpeditionCard key={expedition.slug} expedition={expedition} />
-                ))}
-              </div>
-            )}
-          </div>
-        </section>
-      )}
-
-      {/* 6. СКОРО — редакционный список */}
-      {upcoming.length > 0 && (
-        <section className="dir-soon" aria-label="Будущие экспедиции">
-          <div className="container">
-            <div className="dir-section-head">
-              <span className="dir-section-head__label">Скоро</span>
-            </div>
-            <div className="dir-soon__list">
-              {upcoming.map((expedition) => (
-                <EditorialRow key={expedition.slug} expedition={expedition} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* 7. АРХИВ */}
-      {completed.length > 0 && (
-        <section className="dir-arch" aria-label="Завершённые экспедиции">
-          <div className="container">
-            <div className="dir-section-head">
-              <span className="dir-section-head__label">Архив</span>
-            </div>
-            <div className="dir-arch__list">
-              {completed.map((expedition) => (
-                <ArchiveRow key={expedition.slug} expedition={expedition} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* 10. Финальная editorial-строка */}
       <section className="dir-outro">
@@ -241,86 +263,3 @@ export function ExpeditionsDirectory() {
   );
 }
 
-function ExpeditionCard({
-  expedition,
-  featured = false,
-}: {
-  expedition: Expedition;
-  featured?: boolean;
-}) {
-  return (
-    <Link
-      href={`/expeditions/${expedition.slug}`}
-      className={`dir-card ${featured ? 'dir-card--featured' : ''}`}
-    >
-      <div className={`dir-card__media${featured ? ' dir-card__media--featured' : ''}`}>
-        <Image
-          src={expedition.image}
-          alt={expedition.title}
-          fill
-          sizes={featured ? '(min-width: 768px) 100vw, 100vw' : '(min-width: 768px) 45vw, 100vw'}
-          className="dir-card__image"
-        />
-      </div>
-      <div className="dir-card__body">
-        <span className="dir-card__status">{STATUS_EDITORIAL[expedition.status]}</span>
-        <p className="dir-card__meta">
-          {expedition.country}
-          {expedition.dates ? ` · ${formatDates(expedition.dates)}` : ''}
-        </p>
-        <h3 className="dir-card__title">{expedition.title}</h3>
-        <span className="dir-card__cta">
-          Подробнее <span aria-hidden="true">→</span>
-        </span>
-      </div>
-    </Link>
-  );
-}
-
-function EditorialRow({ expedition }: { expedition: Expedition }) {
-  return (
-    <Link href={`/expeditions/${expedition.slug}`} className="dir-editorial">
-      <div className="dir-editorial__thumb">
-        <Image
-          src={expedition.image}
-          alt={expedition.title}
-          fill
-          sizes="(min-width: 768px) 160px, 120px"
-          className="dir-editorial__image"
-        />
-      </div>
-      <div className="dir-editorial__body">
-        <span className="dir-editorial__status">{STATUS_EDITORIAL[expedition.status]}</span>
-        <h3 className="dir-editorial__title">{expedition.title}</h3>
-        <p className="dir-editorial__desc">{expedition.description}</p>
-        <span className="dir-editorial__cta">
-          Подробнее <span aria-hidden="true">→</span>
-        </span>
-      </div>
-    </Link>
-  );
-}
-
-function ArchiveRow({ expedition }: { expedition: Expedition }) {
-  return (
-    <article className="dir-archive">
-      <div className="dir-archive__thumb">
-        <Image
-          src={expedition.image}
-          alt={expedition.title}
-          fill
-          sizes="(min-width: 768px) 120px, 80px"
-          className="dir-archive__image"
-        />
-      </div>
-      <div className="dir-archive__body">
-        <h3 className="dir-archive__title">{expedition.title}</h3>
-        <p className="dir-archive__meta">
-          {expedition.country}
-          {expedition.dates ? ` · ${formatDates(expedition.dates)}` : ''}
-        </p>
-      </div>
-      <span className="dir-archive__status">{STATUS_EDITORIAL[expedition.status]}</span>
-    </article>
-  );
-}
