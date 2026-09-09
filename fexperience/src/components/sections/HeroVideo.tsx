@@ -32,15 +32,11 @@ export function HeroVideo({ videoSrc, poster, alt }: HeroVideoProps) {
     // Загружаем видео только после монтирования — не блокируем первый рендер
     video.load();
 
-    console.log('🎥 Попытка загрузки форматов:', `${basePath}.webm`, `${basePath}.mp4`);
-
     const attemptPlay = async () => {
-      console.log('✅ Метаданные готовы. Запускаем воспроизведение...');
       try {
         video.muted = true;
         video.playsInline = true;
         await video.play();
-        console.log('▶️ Видео воспроизводится');
       } catch (err) {
         console.warn('⚠️ Автоплей заблокирован браузером:', err);
       }

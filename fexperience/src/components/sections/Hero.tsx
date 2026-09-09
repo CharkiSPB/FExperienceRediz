@@ -37,7 +37,8 @@ const HERO_EXPEDITIONS = expeditions
       new Date(b.startDate ?? '1970-01-01').getTime()
   );
 
-function HeroSeal() {
+function HeroSeal({ slug }: { slug: string }) {
+  const circleId = `hero-seal-circle-${slug}`;
   return (
     <div className="hero-seal" aria-hidden="true">
       <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="hero-seal__svg">
@@ -46,10 +47,10 @@ function HeroSeal() {
         {/* Внутренняя тонкая окружность — лёгкая вторая линия */}
         <circle cx="100" cy="100" r="88" stroke="rgba(26,26,26,0.07)" strokeWidth="0.6" fill="none" />
         <defs>
-          <path id="hero-seal-circle" d="M 100,100 m -76,0 a 76,76 0 1,1 152,0 a 76,76 0 1,1 -152,0" />
+          <path id={circleId} d="M 100,100 m -76,0 a 76,76 0 1,1 152,0 a 76,76 0 1,1 -152,0" />
         </defs>
         <text fill="rgba(26,26,26,0.6)" fontSize="9.8" letterSpacing="3.2">
-          <textPath href="#hero-seal-circle" startOffset="0%">
+          <textPath href={`#${circleId}`} startOffset="0%">
             FORBES FEXPERIENCE · FORBES FEXPERIENCE · FORBES FEXPERIENCE ·
           </textPath>
         </text>
@@ -162,7 +163,7 @@ export function Hero() {
                   </div>
 
                   {/* Круглая печать на границе стекло | видео */}
-                  <HeroSeal />
+                  <HeroSeal slug={expedition.slug} />
                 </div>
               </article>
             );

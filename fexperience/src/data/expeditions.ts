@@ -58,10 +58,10 @@ country: 'Индия',
     fullDescription: '',
     includes: [
       'Медийное сопровождение',
-      'Бизнес-сессии, |нетворкинг',
+      'Бизнес-сессии, нетворкинг',
       'Культурные мероприятия',
-      'Проживание |в отеле 5*',
-      'Трансферы |вип-класса',
+      'Проживание в отеле 5*',
+      'Трансферы вип-класса',
       'Питание',
     ],
     // additionalInfo: 'Мы полностью берём на себя организацию экспедиции и решение всех операционных вопросов. Вы занимаетесь бизнесом и нетворкингом - обо всём остальном позаботится команда FExperience.',
@@ -74,7 +74,7 @@ country: 'Индия',
   },
   {
     slug: 'vietnam',
-    title: 'Бизнес-экспедиция во Вьетнам',
+    title: 'Бизнес-экспедиция с Forbes во Вьетнам',
     country: 'Вьетнам',
     region: 'asia',
     industries: ['Промышленность', 'Логистика и торговля'],
@@ -102,17 +102,19 @@ country: 'Индия',
     fullDescription: 'Поездка во Вьетнам — это уникальная возможность погрузиться в динамично развивающийся рынок Юго-Восточной Азии. За 5 дней вы посетите деловые встречи с представителями торговых палат, локальными производителями и дистрибьюторами, узнаете о регуляторных особенностях ведения бизнеса и построите контакты для долгосрочного партнёрства.',
     includes: [
       'Медийное сопровождение',
-      'Бизнес-сессии, |нетворкинг',
+      'Бизнес-сессии, нетворкинг',
       'Культурные мероприятия',
-      'Проживание |в отеле 5*',
-      'Трансферы |вип-класса',
+      'Проживание в отеле 5*',
+      'Трансферы вип-класса',
       'Питание',
     ],
     // additionalInfo: 'Мы полностью берём на себя организацию экспедиции и решение всех операционных вопросов. Вы занимаетесь бизнесом и нетворкингом - обо всём остальном позаботится команда FExperience.',
     showDatesInMenu: true,
+    // ВКЛЮЧИТЬ ТАЙМЕР ВЬЕТНАМА: поменять enabled на true.
+    // Дата уже стоит (= startDate). Блок на странице подхватится сам.
     timer: {
     enabled: false,
-    targetDate: '2026-10-11T00:00:00Z', // ISO-формат даты начала
+    targetDate: '2027-03-14T00:00:00Z', // = startDate экспедиции
     label: 'До старта экспедиции во Вьетнам',
   },
   //  generalPartner: {
@@ -170,13 +172,21 @@ country: 'Индия',
   // },
 
   // 🆕 Новые экспедиции со статусом "Скоро"
-  { slug: 'sakhalin', title: 'Бизнес-экспедиция на Сахалин', country: 'Сахалин', region: 'russia', dates: '', status: 'upcoming', description: 'Дальний Восток: ресурсы, логистика, выход на азиатские рынки.', industries: ['Энергетика и ресурсы', 'Логистика и торговля'], image: '/images/expeditions/sakhalin.webp', rubrics: { enabled: true }, price: 'уточняется', programSlug: '', fullDescription: '', includes: [] },
-  { slug: 'india', title: 'Бизнес-экспедиция в Индию', country: 'Индия', region: 'asia', dates: '', status: 'upcoming', description: 'Южная Азия: IT, производство, фармацевтика.', industries: ['Технологии', 'Промышленность'], image: '/images/expeditions/india.webp', price: 'уточняется', fullDescription: '' },
-  { slug: 'thailand', title: 'Бизнес-экспедиция в Таиланд', country: 'Таиланд', region: 'asia', dates: '', status: 'upcoming', description: 'Тропический хаб: гостеприимство, агробизнес, технологии.', industries: ['Агропром', 'Технологии'], image: '/images/expeditions/thailand.webp', rubrics: { enabled: true }, price: 'уточняется', programSlug: '', fullDescription: '', includes: [] },
-  { slug: 'indonesia', title: 'Бизнес-экспедиция в Индонезию', country: 'Индонезия', region: 'asia', dates: '', status: 'upcoming', description: 'Архипелаг возможностей: сырьё, цифровая экономика.', industries: ['Энергетика и ресурсы', 'Технологии'], image: '/images/expeditions/indonesia.webp', rubrics: { enabled: true }, price: 'уточняется', programSlug: '', fullDescription: '', includes: [] },
-  { slug: 'brazil', title: 'Бизнес-экспедиция в Бразилию', country: 'Бразилия', region: 'latam', dates: '', status: 'upcoming', description: 'Латинская Америка: агросектор, энергетика, финансы.', industries: ['Агропром', 'Энергетика и ресурсы', 'Финансы и инвестиции'], image: '/images/expeditions/brazilD.webp', rubrics: { enabled: true }, price: 'уточняется', programSlug: '', fullDescription: '', includes: [] },
-  { slug: 'kenya', title: 'Бизнес-экспедиция в Кению', country: 'Кения', region: 'africa', dates: '', status: 'upcoming', description: 'Восточная Африка: финтех, логистика, стартапы.', industries: ['Финансы и инвестиции', 'Технологии', 'Логистика и торговля'], image: '/images/expeditions/kenyaD.webp', rubrics: { enabled: true }, price: 'уточняется', programSlug: '', fullDescription: '', includes: [] },
+  { slug: 'sakhalin', title: 'Бизнес-экспедиция с Forbes на Сахалин', country: 'Сахалин', region: 'russia', dates: '', status: 'upcoming', description: 'Дальний Восток: ресурсы, логистика, выход на азиатские рынки.', industries: ['Энергетика и ресурсы', 'Логистика и торговля'], image: '/images/expeditions/sakhalin.webp', rubrics: { enabled: true }, price: 'уточняется', programSlug: '', fullDescription: '', includes: [] },
+  { slug: 'india', title: 'Бизнес-экспедиция с Forbes в Индию', country: 'Индия', region: 'asia', dates: '', status: 'upcoming', description: 'Южная Азия: IT, производство, фармацевтика.', industries: ['Технологии', 'Промышленность'], image: '/images/expeditions/india.webp', price: 'уточняется', fullDescription: '' },
+  { slug: 'thailand', title: 'Бизнес-экспедиция с Forbes в Таиланд', country: 'Таиланд', region: 'asia', dates: '', status: 'upcoming', description: 'Тропический хаб: гостеприимство, агробизнес, технологии.', industries: ['Агропром', 'Технологии'], image: '/images/expeditions/thailand.webp', rubrics: { enabled: true }, price: 'уточняется', programSlug: '', fullDescription: '', includes: [] },
+  { slug: 'indonesia', title: 'Бизнес-экспедиция с Forbes в Индонезию', country: 'Индонезия', region: 'asia', dates: '', status: 'upcoming', description: 'Архипелаг возможностей: сырьё, цифровая экономика.', industries: ['Энергетика и ресурсы', 'Технологии'], image: '/images/expeditions/indonesia.webp', rubrics: { enabled: true }, price: 'уточняется', programSlug: '', fullDescription: '', includes: [] },
+  { slug: 'brazil', title: 'Бизнес-экспедиция с Forbes в Бразилию', country: 'Бразилия', region: 'latam', dates: '', status: 'upcoming', description: 'Латинская Америка: агросектор, энергетика, финансы.', industries: ['Агропром', 'Энергетика и ресурсы', 'Финансы и инвестиции'], image: '/images/expeditions/brazilD.webp', rubrics: { enabled: true }, price: 'уточняется', programSlug: '', fullDescription: '', includes: [] },
+  { slug: 'kenya', title: 'Бизнес-экспедиция с Forbes в Кению', country: 'Кения', region: 'africa', dates: '', status: 'upcoming', description: 'Восточная Африка: финтех, логистика, стартапы.', industries: ['Финансы и инвестиции', 'Технологии', 'Логистика и торговля'], image: '/images/expeditions/kenyaD.webp', rubrics: { enabled: true }, price: 'уточняется', programSlug: '', fullDescription: '', includes: [] },
 ] as const;
+
+// Общие тезисы hero детальной страницы — для всех экспедиций.
+// Переопределить для конкретной экспедиции можно полем heroTheses.
+export const DEFAULT_HERO_THESES: NonNullable<Expedition['heroTheses']> = [
+  { title: 'Погружение', sub: 'в культуру' },
+  { title: 'Эксклюзивный', sub: 'нетворкинг' },
+  { title: 'Лучшие', sub: 'бизнес-практики' },
+];
 
 export function getNearestExpedition(list: readonly Expedition[] = expeditions): Expedition | undefined {
   const now = Date.now();

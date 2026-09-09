@@ -52,6 +52,7 @@ export type Expedition = {
   heroTitleOpen?: string;
   heroTitleCountry?: string;
   heroPills?: string[];
+  heroTheses?: { title: string; sub: string }[];
   pullQuote?: {
     text: string;
     author: string;

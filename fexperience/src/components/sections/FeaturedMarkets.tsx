@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { getNearestExpedition, expeditions } from '@/data/expeditions';
-import { regions } from '@/data/regions';
 import type { Expedition } from '@/types/expedition';
 
 const statusLabels: Record<Expedition['status'], string> = {
@@ -18,27 +17,12 @@ export function FeaturedMarkets() {
   const nearest = getNearestExpedition(expeditions);
   if (!nearest) return null;
 
-  const region = regions.find((r) => r.id === nearest.region);
-
   // Три карточки тёмной панели: первая — Вьетнам, дальше — две со статусом «скоро»
   const vietnam = expeditions.find((e) => e.slug === 'vietnam');
   const soon = expeditions
     .filter((e) => e.status === 'upcoming' && e.slug !== vietnam?.slug)
     .slice(0, 2);
   const cards = [vietnam, ...soon].filter((e): e is Expedition => Boolean(e)).slice(0, 3);
-
-  // Контекстный абзац правой половины — собран из данных экспедиции
-  const lead =
-    nearest.fullDescription ||
-    nearest.description ||
-    `Бизнес-экспедиция в ${nearest.country}`;
-  const industries =
-    nearest.industries && nearest.industries.length
-      ? nearest.industries.join(', ')
-      : '';
-  const paragraph = [lead, industries ? `Направления: ${industries}` : '']
-    .filter(Boolean)
-    .join(' ');
 
   return (
     <section className="program-block">

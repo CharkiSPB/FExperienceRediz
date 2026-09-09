@@ -7,6 +7,7 @@ import { Calendar, MapPin } from 'lucide-react';
 import { useExpedition } from '@/components/providers/ExpeditionContext';
 import { ParticipantModal } from '@/components/shared/ParticipantModal';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
+import { DEFAULT_HERO_THESES } from '@/data/expeditions';
 import type { Expedition } from '@/types/expedition';
 
 /* Фирменная круглая печать — тот же стандарт (центр: F из логотипа) */
@@ -70,8 +71,11 @@ export function ExpeditionHero({ expedition, heroDate }: ExpeditionHeroProps) {
   const isActive = expedition.status === 'active';
   const isUpcoming = expedition.status === 'upcoming';
 
-  // Скетч — только Hero детальной; fallback — основное фото экспедиции
-  const sketchSrc = expedition.heroSketch || expedition.image;
+  // ЗАМЕНИТЬ: временная заглушка hero-фона — фото ЮАР для всех экспедиций без своего скетча.
+  // Когда будет своё фото: положить файл в /public/images/expeditions/
+  // и прописать путь в поле heroSketch этой экспедиции в src/data/expeditions.ts
+  const HERO_BG_FALLBACK = '/images/expeditions/south-africaC.webp';
+  const sketchSrc = expedition.heroSketch || HERO_BG_FALLBACK;
 
   const openModal = () => {
     setActiveExpeditionSlug(expedition.slug);
@@ -124,9 +128,26 @@ export function ExpeditionHero({ expedition, heroDate }: ExpeditionHeroProps) {
             )}
           </div>
 
-          {expedition.shortDescription && (
-            <p className="expedition-hero__desc fade-up delay-2">
-              {expedition.shortDescription}
+          {(expedition.heroTheses ?? DEFAULT_HERO_THESES).length > 0 ? (
+            <ul className="expedition-hero__theses fade-up delay-2" aria-label="Ключевые преимущества экспедиции">
+              {(expedition.heroTheses ?? DEFAULT_HERO_THESES).map((thesis) => (
+                <li key={thesis.title} className="expedition-hero__thesis">
+                  <span className="expedition-hero__thesis-title">{thesis.title}</span>
+                  <span className="expedition-hero__thesis-sub">{thesis.sub}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            expedition.shortDescription && (
+              <p className="expedition-hero__desc fade-up delay-2">
+                {expedition.shortDescription}
+              </p>
+            )
+          )}
+
+          {isUpcoming && (
+            <p className="expedition-hero__lead fade-up delay-2">
+              Вам интересна локация? Оставьте заявку — и эта точка может стать следующей на карте FExperience.
             </p>
           )}
 

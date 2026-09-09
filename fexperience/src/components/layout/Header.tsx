@@ -169,7 +169,7 @@ export function Header() {
               </button>
             </div>
 
-            {/* Навигация — Playfair 28px, staggered */}
+            {/* Навигация — Philosopher (--font-display) 28px, staggered */}
             <nav className="flex flex-col gap-6 px-6 pt-8">
               {NAV_ITEMS.map((item, i) => (
                 <motion.div
