@@ -3866,6 +3866,20 @@ body::before {
   color: var(--text-primary);
   max-width: 720px;
 }
+.dir-outro .eyebrow-dash {
+  margin-top: 88px;
+}
+.dir-outro__label {
+  margin: 0;
+  font: 700 14px var(--font-sans), sans-serif;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--color-brand-600);
+}
+/* Архив внутри outro: без дублирующих отступов сетки */
+.directory-grid--archive {
+  padding: 32px 0 0;
+}
 
 .dir-outro__link {
   display: inline-block;
@@ -5070,115 +5084,208 @@ body::before {
    detailed_expedition_page_redesign.md
    ════════════════════════════════════════════════════════════════ */
 
-/* ── HERO 100svh: фото + интегрированная стеклянная география ── */
-.exp-hero {
+/* ── HERO детальной: светлый editorial (скетч слоем + печать) ── */
+.expedition-hero {
   position: relative;
-  min-height: 100svh;
+  overflow: hidden;
+  background: var(--color-canvas);
+  /* Верх завышен относительно спеки (40px), чтобы не уйти под фикс-хедер;
+     низ ужат: программа стоит впритык */
+  padding: 120px 0 48px;
+}
+/* Скетч — слоем от секции (проверенный приём со страницы About):
+   справа до края окна, вверх под хедер, вниз до следующего блока */
+.expedition-hero__bgpaint {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 28%;
+  z-index: 0;
+}
+.expedition-hero__sketch {
+  object-fit: cover;
+  object-position: 70% center;
+  user-select: none;
+  pointer-events: none;
+  /* Переход спрятан под текстовой колонкой: длинный и плавный */
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 32%);
+  mask-image: linear-gradient(to right, transparent 0, #000 32%);
+}
+.expedition-hero__grid {
+  position: relative;
+  z-index: 1;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding-inline: 64px;
+  min-height: 560px;
   display: flex;
   align-items: center;
-  overflow: hidden;
-  background: #17130f;
 }
-
-.exp-hero__bg {
+.expedition-hero__content {
+  max-width: 560px;
+}
+.expedition-breadcrumbs {
+  margin: 0 0 24px;
+  font: 400 13px var(--font-sans), sans-serif;
+  color: var(--color-text-tertiary);
+}
+.expedition-breadcrumbs a {
+  color: inherit;
+  text-decoration: none;
+}
+.expedition-breadcrumbs a:hover {
+  color: var(--color-brand-600);
+}
+.expedition-breadcrumbs [aria-current] {
+  color: var(--color-brand-600);
+}
+.expedition-hero__title {
+  margin: 0 0 24px;
+  max-width: 560px;
+  font: 700 clamp(40px, 4.2vw, 60px)/1.08 var(--font-display), Georgia, serif;
+  letter-spacing: -.02em;
+  color: var(--color-text-primary);
+}
+.expedition-hero__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+.expedition-hero__meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: 500 14px var(--font-sans), sans-serif;
+  color: var(--color-text-secondary);
+}
+.expedition-hero__meta-item svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 1.5;
+  color: var(--color-text-tertiary);
+  flex-shrink: 0;
+}
+.expedition-hero__desc {
+  margin: 0 0 32px;
+  max-width: 480px;
+  font: 400 15.5px/1.65 var(--font-sans), sans-serif;
+  color: var(--color-text-secondary);
+}
+.expedition-hero__cta .btn-liquid {
+  border: 0;
+  cursor: pointer;
+}
+/* Текстовая кнопка для завершённых */
+.btn-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: 500 15px/1 var(--font-sans), sans-serif;
+  color: var(--color-text-primary);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 4px;
+  transition: color .25s ease, border-color .25s ease;
+}
+.btn-text:hover {
+  color: var(--color-brand-600);
+  border-bottom-color: var(--color-brand-600);
+}
+/* Печать — на зоне перехода маски (перекрывает стык фона и скетча) */
+.expedition-seal {
   position: absolute;
-  inset: 0;
+  top: 56%;
+  left: 13%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 128px;
+  height: 128px;
+  opacity: 0;
+  animation: expedition-seal-in .6s var(--ease) .35s forwards;
+  pointer-events: none;
+}
+.expedition-seal__svg {
+  display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+}
+@keyframes expedition-seal-in {
+  to { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .expedition-seal { animation: none; opacity: 1; }
 }
 
-.exp-hero__overlay {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(100deg, rgba(20, 16, 12, .84) 0%, rgba(20, 16, 12, .55) 42%, rgba(20, 16, 12, .22) 100%),
-    linear-gradient(180deg, rgba(20, 16, 12, .4) 0%, rgba(20, 16, 12, .06) 45%, rgba(20, 16, 12, .5) 100%);
+@media (max-width: 1024px) {
+  .expedition-hero__grid {
+    padding-inline: 32px;
+    min-height: 0;
+  }
+  /* На планшете скетч — блоком под текстом */
+  .expedition-hero {
+    display: flex;
+    flex-direction: column;
+  }
+  .expedition-hero__grid {
+    order: 1;
+    width: 100%;
+  }
+  .expedition-hero__bgpaint {
+    order: 2;
+    position: relative;
+    left: auto;
+    min-height: 320px;
+    aspect-ratio: 16 / 9;
+    margin: 40px 32px 0;
+  }
+  .expedition-hero__sketch {
+    -webkit-mask-image: none;
+    mask-image: none;
+    border-radius: 12px;
+  }
+  .expedition-seal {
+    width: 96px;
+    height: 96px;
+    top: 16px;
+    left: auto;
+    right: 16px;
+    transform: none;
+  }
+  .expedition-hero__title {
+    font-size: 40px;
+  }
 }
-
-.exp-hero__content {
-  position: relative;
-  z-index: 2;
-  width: min(1400px, calc(100% - 80px));
-  margin: 0 auto;
-  padding: 150px 0 64px;
-}
-
-.exp-hero__grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
-  gap: 56px;
-  align-items: center;
-}
-
-.exp-hero__eyebrow {
-  margin: 0 0 24px;
-  font: 600 13px/1 var(--font-sans), sans-serif;
-  letter-spacing: .16em;
-  text-transform: uppercase;
-  color: var(--orange-400);
-}
-
-.exp-hero__title {
-  margin: 0 0 20px;
-  font: 700 clamp(56px, 9vw, 118px)/.95 var(--font-display), Georgia, serif;
-  letter-spacing: -.03em;
-  color: #fff;
-  text-shadow: 0 4px 40px rgba(0, 0, 0, .35);
-}
-
-.exp-hero__dates {
-  margin: 0 0 24px;
-  font: 500 16px/1 var(--font-sans), sans-serif;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, .82);
-}
-
-.exp-hero__pitch {
-  margin: 0 0 40px;
-  max-width: 520px;
-  font: 400 18px/1.6 var(--font-sans), sans-serif;
-  color: rgba(255, 255, 255, .78);
-}
-
-.exp-hero__cta {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-.exp-hero__spots {
-  font: 500 14px/1 var(--font-sans), sans-serif;
-  color: rgba(255, 255, 255, .72);
-}
-
-.exp-hero__right {
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-}
-
-/* Плавное появление типографики hero */
-.exp-hero__eyebrow,
-.exp-hero__title,
-.exp-hero__dates,
-.exp-hero__pitch,
-.exp-hero__cta {
-  animation: exp-fade-up 1s var(--ease) both;
-}
-
-.exp-hero__eyebrow { animation-delay: .1s; }
-.exp-hero__title   { animation-delay: .2s; }
-.exp-hero__dates   { animation-delay: .34s; }
-.exp-hero__pitch   { animation-delay: .46s; }
-.exp-hero__cta     { animation-delay: .6s; }
-
-@keyframes exp-fade-up {
-  from { opacity: 0; transform: translateY(18px); }
-  to   { opacity: 1; transform: translateY(0); }
+@media (max-width: 640px) {
+  .expedition-hero {
+    padding: 100px 0 48px;
+  }
+  .expedition-hero__grid {
+    padding-inline: 24px;
+  }
+  .expedition-hero__title {
+    font-size: 34px;
+  }
+  .expedition-hero__meta {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .expedition-hero__cta .btn-liquid {
+    width: 100%;
+  }
+  .expedition-hero__bgpaint {
+    aspect-ratio: 4 / 3;
+    margin: 32px 24px 0;
+  }
+  .expedition-seal {
+    width: 80px;
+    height: 80px;
+    top: 12px;
+    left: auto;
+    right: 12px;
+    transform: none;
+  }
 }
 
 /* ── СТЕКЛЯННЫЙ КОНТИНЕНТ (expedition-map) ── */
@@ -5481,76 +5588,160 @@ body::before {
   background: linear-gradient(180deg, transparent, rgba(20, 16, 12, .68));
 }
 
-/* ── ПРОГРАММА — editorial-главы ── */
-.exp-program {
-  padding: 120px 0;
-  background: var(--bg-surface);
+/* ── ПРОГРАММА — тёмный блок впритык к Hero (во всю ширину экрана) ── */
+.expedition-program {
+  background: var(--color-paper-dark); /* #272421 */
+  padding: 0 0 64px;
 }
-
-.exp-program__head {
-  margin-bottom: 40px;
+.expedition-program__head {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 56px 64px 0;
 }
-
-.exp-program__headline {
-  margin: 0;
-  font: 700 clamp(36px, 4.5vw, 52px)/1.08 var(--font-display), Georgia, serif;
-  letter-spacing: -.02em;
-  color: var(--text-primary);
+.expedition-program__title {
+  margin: 0 0 32px;
+  font: 600 clamp(28px, 2.6vw, 40px)/1.2 var(--font-display), Georgia, serif;
+  color: #FFF6EE;
 }
-
-.exp-program__chapters {
-  border-top: 1px solid var(--border-hairline);
+.program-detail-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 107, 44, .22);
 }
-
-.exp-program__chapter {
+.program-detail-tab {
+  padding: 10px 18px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  font: 600 12px var(--font-sans), sans-serif;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(255, 246, 238, .55);
+  transition: color .2s, background .2s;
+  cursor: pointer;
+}
+.program-detail-tab:hover {
+  color: #FFF6EE;
+}
+.program-detail-tab.active {
+  background: var(--color-brand-600);
+  color: #fff;
+}
+.program-detail {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 32px 64px 0;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 64px;
-  align-items: center;
-  padding: 64px 0;
-  border-bottom: 1px solid var(--border-hairline);
+  grid-template-columns: 42fr 58fr;
+  gap: 48px;
+  align-items: start;
+  animation: program-detail-in .3s var(--ease);
 }
-
-.exp-program__chapter--1 .exp-program__photo,
-.exp-program__chapter--3 .exp-program__photo {
-  order: -1;
+@keyframes program-detail-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-
-.exp-program__chapter--2 {
-  grid-template-columns: 1fr;
-  gap: 32px;
+@media (prefers-reduced-motion: reduce) {
+  .program-detail { animation: none; }
 }
-
-.exp-program__num {
-  display: block;
-  margin-bottom: 16px;
-  font: 600 13px/1 var(--font-sans), sans-serif;
-  letter-spacing: .14em;
-  color: var(--orange-600);
+.program-detail__label {
+  margin: 0 0 16px;
+  font: 600 12px var(--font-sans), sans-serif;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--color-brand-600);
 }
-
-.exp-program__title {
-  margin: 0 0 18px;
-  font: 600 clamp(24px, 2.6vw, 32px)/1.2 var(--font-display), Georgia, serif;
-  color: var(--text-primary);
+.program-detail__title {
+  margin: 0 0 20px;
+  font: 600 clamp(22px, 2vw, 30px)/1.25 var(--font-display), Georgia, serif;
+  color: #FFF6EE;
 }
-
-.exp-program__desc {
+/* День без названия в данных — крупный оранжевый «День N» */
+.program-detail__title--accent {
+  font-size: clamp(30px, 3vw, 46px);
+  color: var(--color-brand-600);
+}
+.program-detail__text {
   margin: 0;
-  font: 400 16px/1.7 var(--font-sans), sans-serif;
-  color: var(--text-secondary);
+  max-width: 460px;
+  font: 400 14.5px/1.65 var(--font-sans), sans-serif;
+  color: rgba(255, 246, 238, .65);
 }
-
-.exp-program__photo {
+.program-detail__list {
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.program-detail__list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font: 400 13.5px/1.45 var(--font-sans), sans-serif;
+  color: rgba(255, 246, 238, .75);
+}
+.program-detail__list li::before {
+  content: "";
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 107, 44, .6);
+  background: radial-gradient(circle, var(--color-brand-600) 0 3px, transparent 3.5px);
+}
+.program-detail__photo {
   position: relative;
-  aspect-ratio: 4 / 3;
-  border-radius: var(--radius-lg);
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  border-radius: 12px;
   overflow: hidden;
-  background: #e8e2da;
+}
+.program-detail__img {
+  object-fit: cover;
 }
 
-.exp-program__chapter--2 .exp-program__photo {
-  aspect-ratio: 21 / 9;
+@media (max-width: 1024px) {
+  .expedition-program__head,
+  .program-detail {
+    padding-inline: 32px;
+  }
+  .program-detail {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .program-detail-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+  .program-detail-tab {
+    scroll-snap-align: start;
+    flex-shrink: 0;
+  }
+}
+@media (max-width: 640px) {
+  .expedition-program {
+    padding: 0 0 56px;
+  }
+  .expedition-program__head {
+    padding-top: 56px;
+  }
+  .expedition-program__title {
+    font-size: 24px;
+  }
+  .program-detail {
+    padding-inline: 24px;
+  }
+  .program-detail__title {
+    font-size: 20px;
+  }
+  .program-detail__photo {
+    aspect-ratio: 4 / 3;
+  }
 }
 
 /* ── ЛЮДИ — второй слой бумаги (команда, приоритет по spec §4) ── */
@@ -5836,22 +6027,6 @@ body::before {
 
 /* ── Адаптив редизайна ── */
 @media (max-width: 1024px) {
-  .exp-hero__grid {
-    grid-template-columns: 1fr;
-    gap: 40px;
-  }
-
-  .exp-hero__right {
-    justify-self: stretch;
-    justify-content: center;
-    width: 100%;
-  }
-
-  .expedition-map {
-    width: min(72vw, 440px);
-    margin-right: 0;
-  }
-
   .exp-context__grid {
     grid-template-columns: 1fr;
     gap: 48px;
@@ -5885,37 +6060,9 @@ body::before {
 }
 
 @media (max-width: 768px) {
-  .exp-hero {
-    min-height: 100svh;
-    align-items: flex-start;
-  }
-
-  .exp-hero__content {
-    width: min(100% - 40px, 1400px);
-    padding: 130px 0 48px;
-  }
-
-  .exp-hero__grid {
-    gap: 32px;
-  }
-
-  .exp-hero__title {
-    font-size: clamp(48px, 15vw, 68px);
-  }
-
-  .exp-hero__right {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .expedition-map {
-    width: min(84vw, 420px);
-  }
-
   .exp-context,
   .exp-route,
   .exp-experience,
-  .exp-program,
   .exp-people,
   .exp-result {
     padding: 88px 0;
@@ -5988,14 +6135,6 @@ body::before {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .exp-hero__eyebrow,
-  .exp-hero__title,
-  .exp-hero__dates,
-  .exp-hero__pitch,
-  .exp-hero__cta {
-    animation: none !important;
-  }
-
   .expedition-map__pulse {
     animation: none !important;
   }

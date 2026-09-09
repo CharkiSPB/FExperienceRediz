@@ -6,12 +6,11 @@ import { expeditions } from '@/data/expeditions';
 import { programs } from '@/data/program';
 import { config } from '@/data/config';
 import { speakers } from '@/data/speakers';
-import { regions } from '@/data/regions';
-import { expeditionMapPoints } from '@/config/mapPoints';
 import { expeditionEditorial } from '@/config/expeditionEditorial';
-import { MapContinent } from '@/components/MapContinent';
 import { ExpeditionDetailForm } from '@/components/shared/ExpeditionDetailForm';
 import { CountdownTimer } from '@/components/shared/CountdownTimer';
+import { ExpeditionHero } from '@/components/sections/ExpeditionHero';
+import { ExpeditionProgram } from '@/components/sections/ExpeditionProgram';
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -22,17 +21,7 @@ const MONTHS_GEN = [
   'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря',
 ];
 
-// Заголовки дней для программ, где в данных title пустой (sa-program)
-const PROGRAM_DAY_TITLES: Record<string, Record<number, string>> = {
-  'sa-program': {
-    1: 'Ланзерак — открытие программы',
-    2: 'Бизнес-сессия «Африка в фокусе»',
-    3: 'Стелленбосский университет',
-    4: 'Локальное предприятие и Кейптаун',
-    5: 'Babylonstoren — «Говорят местные»',
-    6: 'Мыс Доброй Надежды',
-  },
-};
+
 
 function formatHeroDate(expedition: (typeof expeditions)[number]): string {
   if (expedition.startDate && expedition.endDate) {
@@ -44,10 +33,6 @@ function formatHeroDate(expedition: (typeof expeditions)[number]): string {
     }
   }
   return expedition.dates || '';
-}
-
-function splitDescription(value: string) {
-  return value.split('|').map(part => part.trim());
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -86,13 +71,6 @@ export default async function ExpeditionDetailPage({ params }: Props) {
   const isUpcoming = expedition.status === 'upcoming';
   const isActive = expedition.status === 'active';
   const editorial = expeditionEditorial[slug];
-
-  // Данные карты «свой континент»
-  const region = regions.find(r => r.id === expedition.region);
-  const mapData = expeditionMapPoints[slug];
-  const neighborPoints = (region?.markets ?? [])
-    .filter(m => m.id !== slug)
-    .map(m => ({ x: m.x, y: m.y }));
 
   const expeditionSpeakers = speakers.filter(s =>
     s.expeditionSlugs?.includes(slug) || s.category === 'other'
@@ -141,10 +119,7 @@ export default async function ExpeditionDetailPage({ params }: Props) {
       : undefined,
   };
 
-  const mapStatus = isCompleted ? 'завершена' : isUpcoming ? 'скоро' : 'активна';
-
   const heroDate = formatHeroDate(expedition);
-  const heroPitch = editorial?.heroPitch || expedition.description || expedition.fullDescription || '';
 
   return (
     <article className="expedition-detail min-h-screen">
@@ -164,65 +139,11 @@ export default async function ExpeditionDetailPage({ params }: Props) {
       />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      {/* ══════════════ HERO — первый кадр экспедиции, 100svh, география внутри ══════════════ */}
-      <section className="exp-hero">
-        <Image
-          src={expedition.image}
-          alt={expedition.title}
-          fill
-          priority
-          sizes="100vw"
-          className="exp-hero__bg"
-        />
-        <div className="exp-hero__overlay" />
-        <div className="exp-hero__content container">
-          <div className="exp-hero__grid">
-            <div className="exp-hero__left">
-              <p className="exp-hero__eyebrow">Бизнес-экспедиция</p>
+      {/* ══════════════ HERO — светлый editorial (скетч + печать) ══════════════ */}
+      <ExpeditionHero expedition={expedition} heroDate={heroDate} />
 
-              <h1 className="exp-hero__title">{expedition.country}</h1>
-
-              {heroDate && <p className="exp-hero__dates">{heroDate}</p>}
-
-              {heroPitch && <p className="exp-hero__pitch">{heroPitch}</p>}
-
-              <div className="exp-hero__cta">
-                {isActive ? (
-                  <>
-                    <a href="#register" className="btn-liquid">
-                      <span className="btn-liquid-text">Стать участником</span>
-                    </a>
-                    {expedition.spots && expedition.spots > 0 && (
-                      <span className="exp-hero__spots">Осталось мест: {expedition.spots}</span>
-                    )}
-                  </>
-                ) : isUpcoming ? (
-                  <a href="#register" className="detail-hero__btn-outline">
-                    Оставить заявку
-                  </a>
-                ) : (
-                  <Link href="/expeditions" className="detail-hero__btn-outline">
-                    Смотреть активные экспедиции
-                  </Link>
-                )}
-              </div>
-            </div>
-
-            <div className="exp-hero__right">
-              {mapData && region && (
-                <MapContinent
-                  continent={mapData.continent}
-                  aspect={mapData.aspect}
-                  activePoint={mapData.activePoint}
-                  neighborPoints={neighborPoints}
-                  programCities={mapData.programCities}
-                  status={mapStatus}
-                />
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* ══════════════ ПРОГРАММА — тёмный блок впритык к Hero ══════════════ */}
+      <ExpeditionProgram program={program} status={expedition.status} />
 
       {/* ══════════════ НАРРАТИВ — только «Активна» с редакционным контентом ══════════════ */}
       {isActive && editorial && (
@@ -307,52 +228,6 @@ export default async function ExpeditionDetailPage({ params }: Props) {
               </div>
             </div>
           </section>
-
-          {/* ПРОГРАММА — editorial-главы */}
-          {program.length > 0 && (
-            <section className="exp-program">
-              <div className="container">
-                <div className="exp-program__head">
-                  <p className="dir-label">Программа</p>
-                  <h2 className="exp-program__headline">Как построены дни</h2>
-                </div>
-                <div className="exp-program__chapters">
-                  {program.map((day, i) => {
-                    const title =
-                      day.title ||
-                      PROGRAM_DAY_TITLES[expedition.programSlug || '']?.[day.day] ||
-                      `День ${day.day}`;
-                    const layout = i % 4; // 0: image right · 1: image left · 2: full-width · 3: image left
-                    return (
-                      <article key={day.day} className={`exp-program__chapter exp-program__chapter--${layout}`}>
-                        <div className="exp-program__text">
-                          <span className="exp-program__num">{String(day.day).padStart(2, '0')}</span>
-                          <h3 className="exp-program__title">{title}</h3>
-                          <p className="exp-program__desc">
-                            {splitDescription(day.description).map((part, j, arr) => (
-                              <span key={j}>
-                                {part}
-                                {j < arr.length - 1 && <br />}
-                              </span>
-                            ))}
-                          </p>
-                        </div>
-                        <figure className="exp-program__photo">
-                          <Image
-                            src={day.image}
-                            alt={title}
-                            fill
-                            sizes="(max-width: 768px) 100vw, 50vw"
-                            className="object-cover"
-                          />
-                        </figure>
-                      </article>
-                    );
-                  })}
-                </div>
-              </div>
-            </section>
-          )}
 
           {/* ЛЮДИ — editorial-list */}
           {expeditionSpeakers.length > 0 && (

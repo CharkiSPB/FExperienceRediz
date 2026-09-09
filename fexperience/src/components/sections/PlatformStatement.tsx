@@ -39,18 +39,16 @@ function ProjectSeal() {
           FORBES FEXPERIENCE · FORBES FEXPERIENCE · FORBES FEXPERIENCE ·
         </textPath>
       </text>
-      {/* Центр — только F, фирменный оранжевый */}
-      <text
-        x="100"
-        y="122"
-        textAnchor="middle"
-        fontSize="64"
-        fontWeight="700"
-        fill="var(--color-brand-600)"
-        style={{ fontFamily: 'var(--font-display), serif' }}
-      >
-        F
-      </text>
+      {/* Центр — буква F из фирменного логотипа (кроп viewBox по зоне F) */}
+      <svg x="68" y="66" width="64" height="68" viewBox="0 0 320 344">
+        <image
+          href="/images/logo/F_logo.svg"
+          x="0"
+          y="0"
+          width="1971"
+          height="344"
+        />
+      </svg>
     </svg>
   );
 }

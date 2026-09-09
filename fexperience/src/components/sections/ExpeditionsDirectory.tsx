@@ -50,17 +50,16 @@ function DirectorySeal() {
           FORBES FEXPERIENCE · FORBES FEXPERIENCE · FORBES FEXPERIENCE ·
         </textPath>
       </text>
-      <text
-        x="100"
-        y="122"
-        textAnchor="middle"
-        fontSize="64"
-        fontWeight="700"
-        fill="var(--color-brand-600)"
-        style={{ fontFamily: 'var(--font-display), serif' }}
-      >
-        F
-      </text>
+      {/* Центр — буква F из фирменного логотипа (кроп viewBox по зоне F) */}
+      <svg x="68" y="66" width="64" height="68" viewBox="0 0 320 344">
+        <image
+          href="/images/logo/F_logo.svg"
+          x="0"
+          y="0"
+          width="1971"
+          height="344"
+        />
+      </svg>
     </svg>
   );
 }
@@ -125,12 +124,17 @@ export function ExpeditionsDirectory() {
     });
   }, [regionFilter]);
 
-  // Единая сетка: active по дате → upcoming порядком данных; completed вне сетки
+  // Единая сетка: active по дате → upcoming порядком данных
   const active = filtered
     .filter((e) => e.status === 'active')
     .sort((a, b) => (a.startDate ?? '').localeCompare(b.startDate ?? ''));
   const upcoming = filtered.filter((e) => e.status === 'upcoming');
   const cards = [...active, ...upcoming];
+  // Задел архива: завершённые, кроме делового ужина в Дели
+  // (кейс не состоялся — записи как бы не было)
+  const completed = filtered.filter(
+    (e) => e.status === 'completed' && e.slug !== 'new-delhi',
+  );
 
   return (
     <div className="directory">
@@ -154,6 +158,7 @@ export function ExpeditionsDirectory() {
               {' / '}
               <span aria-current="page">Директория экспедиций</span>
             </nav>
+            <span className="eyebrow-dash fade-up" aria-hidden="true" />
             <p className="directory-eyebrow fade-up delay-1">Направления</p>
             <h1 className="directory-title fade-up delay-1">
               <span className="block">Бизнес-экспедиции</span>
@@ -189,12 +194,15 @@ export function ExpeditionsDirectory() {
       <section className="directory-catalog" aria-label="Экспедиции">
         <div className="container">
           {active.length > 0 && (
+            <>
+            <span className="eyebrow-dash" aria-hidden="true" />
             <div className="directory-status">
               <span className="directory-status__title">Активные</span>
               <span className="directory-status__count">
                 {String(active.length).padStart(2, '0')} — сейчас
               </span>
             </div>
+            </>
           )}
 
           <div className="directory-grid">
@@ -246,7 +254,7 @@ export function ExpeditionsDirectory() {
         </div>
       </section>
 
-      {/* 10. Финальная editorial-строка */}
+      {/* 10. Финальная editorial-строка + задел архива */}
       <section className="dir-outro">
         <div className="container">
           <p className="dir-outro__phrase">
@@ -254,9 +262,53 @@ export function ExpeditionsDirectory() {
             <br />
             Мы выбираем рынки, где есть что понять.
           </p>
-          <Link href="/expeditions" className="dir-outro__link">
-            Все экспедиции <span aria-hidden="true">→</span>
-          </Link>
+          {completed.length > 0 && (
+            <>
+              <span className="eyebrow-dash" aria-hidden="true" />
+              <p className="dir-outro__label">Завершённые экспедиции</p>
+              <div className="directory-grid directory-grid--archive">
+                {completed.map((expedition, index) => {
+                  const date = formatRange(expedition);
+                  return (
+                    <Link
+                      key={expedition.slug}
+                      href={`/expeditions/${expedition.slug}`}
+                      className={`exp-card fade-up delay-${(index % 6) + 1}`}
+                    >
+                      <Image
+                        src={expedition.image}
+                        alt={expedition.title}
+                        fill
+                        sizes="(min-width: 1025px) 33vw, (min-width: 641px) 50vw, 100vw"
+                        className="exp-card__img"
+                      />
+                      <div className="exp-card__overlay" aria-hidden="true" />
+                      <div className="exp-card__content">
+                        {expedition.region && (
+                          <p className="exp-card__region">
+                            {REGION_RU[expedition.region]}
+                          </p>
+                        )}
+                        <h3 className="exp-card__name">{expedition.country}</h3>
+                        <div className="exp-card__foot">
+                          {date ? (
+                            <span className="exp-card__date">{date}</span>
+                          ) : (
+                            <span className="exp-card__date exp-card__date--soon">
+                              Завершена
+                            </span>
+                          )}
+                          <span className="exp-card__arrow" aria-hidden="true">
+                            <ArrowUpRight size={18} />
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </>
+          )}
         </div>
       </section>
     </div>
