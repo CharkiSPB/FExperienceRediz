@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import { expeditions } from '@/data/expeditions';
 import { useExpedition } from '@/components/providers/ExpeditionContext';
+import { RequestModal } from '@/components/shared/RequestModal';
 
 const MONTHS_GEN = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
 const MONTHS_NOM = ['январь', 'февраль', 'март', 'апрель', 'май', 'июнь', 'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь'];
@@ -71,6 +72,7 @@ function HeroSeal({ slug }: { slug: string }) {
 
 export function Hero() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { setActiveExpeditionSlug } = useExpedition();
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -153,9 +155,16 @@ export function Hero() {
                     </h1>
 
                     <div className="hero-compact__cta">
-                      <Link className="hero-slide__join btn-liquid btn-liquid--on-light" href={`/expeditions/${expedition.slug}#form`}>
+                      <button
+                        type="button"
+                        className="hero-slide__join btn-liquid btn-liquid--on-light cursor-pointer"
+                        onClick={() => {
+                          setActiveExpeditionSlug(expedition.slug);
+                          setIsModalOpen(true);
+                        }}
+                      >
                         <span className="btn-liquid-text">Стать участником</span>
-                      </Link>
+                      </button>
                       <Link className="hero-slide__details btn-outline" href={`/expeditions/${expedition.slug}`}>
                         <span>Подробнее</span>
                       </Link>
@@ -170,6 +179,12 @@ export function Hero() {
           })}
         </div>
       </div>
+
+      <RequestModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        defaultExpeditionSlug={HERO_EXPEDITIONS[activeIndex]?.slug}
+      />
 
       {HERO_EXPEDITIONS.length > 1 && (
         <>

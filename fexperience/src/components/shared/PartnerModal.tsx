@@ -1,21 +1,23 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X } from 'lucide-react';
+import { X, Shield, ChevronDown, Check } from 'lucide-react';
+import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import Image from 'next/image';
 import { expeditions } from '@/data/expeditions';
 import { CustomSelect } from '@/components/shared/CustomSelect';
+import { ModalAside, ModalSeal } from '@/components/shared/ModalAside';
 
-// 🔹 Извлекает месяц и год из строки даты: "11-16 октября 2026" → "октябрь 2026"
+// Извлекает месяц и год из строки даты: "11-16 октября 2026" → "октябрь 2026"
 function formatMonthYear(dateStr: string): string {
   const match = dateStr.match(/([а-яА-ЯёЁ]+)\s+(\d{4})/);
   if (match) return `${match[1]} ${match[2]}`;
   return '';
 }
 
+// Схема — без изменений
 const formSchema = z.object({
   expedition: z.string().min(1, 'Выберите экспедицию'),
   fullName: z.string().min(2, 'Минимум 2 символа'),
@@ -37,6 +39,8 @@ type PartnerModalProps = {
 export function PartnerModal({ isOpen, onClose }: PartnerModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   const {
     register,
@@ -50,14 +54,54 @@ export function PartnerModal({ isOpen, onClose }: PartnerModalProps) {
     defaultValues: { consent: false },
   });
 
+  const selectedSlug = watch('expedition');
+  const selected = expeditions.find((e) => e.slug === selectedSlug);
+  const photo = selected?.image ?? expeditions.find((e) => e.status === 'active')?.image;
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setIsSuccess(false);
+    setSubmitError(null);
+  }, [isOpen]);
+
   useEffect(() => {
     if (isOpen) document.body.style.overflow = 'hidden';
     else document.body.style.overflow = 'unset';
     return () => { document.body.style.overflow = 'unset'; };
   }, [isOpen]);
 
+  // Esc + focus trap
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+        return;
+      }
+      if (e.key !== 'Tab' || !panelRef.current) return;
+      const list = Array.from(
+        panelRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        )
+      ).filter((el) => !el.hasAttribute('disabled'));
+      if (list.length === 0) return;
+      const first = list[0];
+      const last = list[list.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [isOpen, onClose]);
+
   const onSubmit = async (data: FormValues) => {
     setIsSubmitting(true);
+    setSubmitError(null);
     try {
       const response = await fetch('/api/lead', {
         method: 'POST',
@@ -67,12 +111,8 @@ export function PartnerModal({ isOpen, onClose }: PartnerModalProps) {
       if (!response.ok) throw new Error('Ошибка отправки');
       setIsSuccess(true);
       reset();
-      setTimeout(() => {
-        setIsSuccess(false);
-        onClose();
-      }, 2000);
     } catch {
-      console.error('Ошибка отправки');
+      setSubmitError('Не удалось отправить заявку. Попробуйте ещё раз.');
     } finally {
       setIsSubmitting(false);
     }
@@ -85,57 +125,71 @@ export function PartnerModal({ isOpen, onClose }: PartnerModalProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+          transition={{ duration: 0.25 }}
+          className="request-modal"
           onClick={onClose}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Форма партнёрства"
         >
           <motion.div
-            initial={{ scale: 0.95, opacity: 0, y: 20 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.95, opacity: 0, y: 20 }}
-            transition={{ duration: 0.2 }}
+            ref={panelRef}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 12 }}
+            transition={{ duration: 0.25 }}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-md overflow-hidden rounded-xl"
+            className="request-modal__grid"
           >
-            {/* Фоновое изображение */}
-            <div className="absolute inset-0 -z-10">
-              <Image
-                src="/images/media/modalki.webp"
-                alt=""
-                fill
-                className="object-cover"
-                priority
-              />
-              <div className="absolute inset-0 bg-gradient-to-b from-[#110F0D]/40 via-[#110F0D]/30 to-[#110F0D]/40" />
-            </div>
+            <ModalAside photo={photo} eyebrow="Стать партнёром" />
 
-            <div className="relative p-6 md:p-8">
-              <button onClick={onClose} className="absolute top-4 right-4 text-[#666666] hover:text-white transition-colors z-10">
+            <div className="request-modal__form-panel">
+              <button
+                type="button"
+                onClick={onClose}
+                className="request-modal__close"
+                aria-label="Закрыть форму"
+              >
                 <X className="w-5 h-5" />
               </button>
 
               {isSuccess ? (
-                <div className="text-center py-8">
-                  <h3 className="text-2xl font-serif font-bold text-white mb-2">Заявка отправлена!</h3>
-                  <p className="text-[#A0A0A0]">Мы свяжемся с вами для обсуждения партнёрства.</p>
+                <div className="request-modal__success">
+                  <span className="request-modal__success-check" aria-hidden="true">
+                    <Check className="w-6 h-6" />
+                  </span>
+                  <h3 className="request-modal__success-title">Заявка отправлена!</h3>
+                  <p className="request-modal__success-text">
+                    Мы свяжемся с вами для обсуждения партнёрства.
+                  </p>
+                  <Link href="/articles" className="btn-text request-modal__articles-link" onClick={onClose}>
+                    Перейти в раздел Статьи <span aria-hidden="true">→</span>
+                  </Link>
                 </div>
               ) : (
                 <>
-                  <h3 className="text-2xl font-serif font-bold text-white mb-5 text-center w-full">Стать партнёром</h3>
+                  <div className="request-modal__mobile-head" aria-hidden="true">
+                    <ModalSeal size={72} />
+                  </div>
+                  <h3 className="request-modal__title">Стать партнёром</h3>
+                  <h3 className="request-modal__title-mobile">
+                    Присоединяйтесь к бизнес-экспедициям <span>FExperience</span>
+                  </h3>
+                  <span className="request-modal__title-line" aria-hidden="true" />
 
-                  <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-                    {/* Бизнес-экспедиция */}
-                    <div className="flex items-start gap-3">
-                      <label className="w-[180px] flex-shrink-0 flex items-start gap-1.5 text-sm text-white/80 pt-2.5">
-                        <span className="text-[#FF8800] text-[8px] leading-none flex-shrink-0 ">★</span>
-                        Бизнес-экспедиция
-                      </label>
-                      <div className="flex-1 min-w-0">
+                  <form onSubmit={handleSubmit(onSubmit)} className="request-modal__form" noValidate>
+                    <div className="request-field">
+                      <span className="request-field__label" id="partner-expedition-label">
+                        <span className="req" aria-hidden="true">*</span>Бизнес-экспедиция
+                      </span>
+                      <div>
                         <CustomSelect
-                          options={expeditions.map(exp => ({
+                          options={expeditions.map((exp) => ({
                             value: exp.slug,
-                            label: exp.status === 'active' && formatMonthYear(exp.dates)
-                              ? `${exp.country} | ${formatMonthYear(exp.dates)}`
-                              : exp.country,
+                            label:
+                              exp.status === 'active' && formatMonthYear(exp.dates)
+                                ? `${exp.country} | ${formatMonthYear(exp.dates)}`
+                                : exp.country,
                           }))}
                           value={watch('expedition') || ''}
                           onChange={(val) => setValue('expedition', val, { shouldValidate: true })}
@@ -145,76 +199,115 @@ export function PartnerModal({ isOpen, onClose }: PartnerModalProps) {
                       </div>
                     </div>
 
-                    {/* ФИО */}
-                    <div className="flex items-start gap-3">
-                      <label className="w-[180px] flex-shrink-0 flex items-start gap-1.5 text-sm text-white/80 pt-2.5">
-                        <span className="text-[#FF8800] text-[8px] leading-none flex-shrink-0 ">★</span>
-                        ФИО
+                    <div className="request-field">
+                      <label className="request-field__label" htmlFor="partner-fullname">
+                        <span className="req" aria-hidden="true">*</span>ФИО
                       </label>
-                      <div className="flex-1 min-w-0">
-                        <input {...register('fullName')} placeholder="Иванов Иван Иванович" className="w-full bg-[#1A1A1A]/80 border border-[#2A2A2A] rounded-lg px-3 py-2 text-white text-sm placeholder-[#666666] focus:outline-none focus:border-[#FF8800] transition-colors" />
-                        {errors.fullName && <p className="text-red-500 text-xs mt-0.5">{errors.fullName.message}</p>}
-                      </div>
-                    </div>
-
-                    {/* Должность */}
-                    <div className="flex items-start gap-3">
-                      <label className="w-[180px] flex-shrink-0 flex items-start gap-1.5 text-sm text-white/80 pt-2.5">
-                        <span className="text-[#FF8800] text-[8px] leading-none flex-shrink-0 ">★</span>
-                        Должность
-                      </label>
-                      <div className="flex-1 min-w-0">
-                        <input {...register('position')} placeholder="Генеральный директор" className="w-full bg-[#1A1A1A]/80 border border-[#2A2A2A] rounded-lg px-3 py-2 text-white text-sm placeholder-[#666666] focus:outline-none focus:border-[#FF8800] transition-colors" />
-                        {errors.position && <p className="text-red-500 text-xs mt-0.5">{errors.position.message}</p>}
-                      </div>
-                    </div>
-
-                    {/* Компания */}
-                    <div className="flex items-start gap-3">
-                      <label className="w-[180px] flex-shrink-0 flex items-start gap-1.5 text-sm text-white/80 pt-2.5">
-                        <span className="text-[#FF8800] text-[8px] leading-none flex-shrink-0 ">★</span>
-                        Компания
-                      </label>
-                      <div className="flex-1 min-w-0">
-                        <input {...register('company')} placeholder="ООО «Компания»" className="w-full bg-[#1A1A1A]/80 border border-[#2A2A2A] rounded-lg px-3 py-2 text-white text-sm placeholder-[#666666] focus:outline-none focus:border-[#FF8800] transition-colors" />
-                        {errors.company && <p className="text-red-500 text-xs mt-0.5">{errors.company.message}</p>}
-                      </div>
-                    </div>
-
-                    {/* Телефон */}
-                    <div className="flex items-start gap-3">
-                      <label className="w-[180px] flex-shrink-0 flex items-start gap-1.5 text-sm text-white/80 pt-2.5">
-                        <span className="text-[#FF8800] text-[8px] leading-none flex-shrink-0 ">★</span>
-                        Телефон
-                      </label>
-                      <div className="flex-1 min-w-0">
+                      <div>
                         <input
+                          id="partner-fullname"
+                          {...register('fullName')}
+                          placeholder="Иванов Иван Иванович"
+                          autoComplete="name"
+                          className="request-input"
+                          disabled={isSubmitting}
+                        />
+                        {errors.fullName && <p className="request-error">{errors.fullName.message}</p>}
+                      </div>
+                    </div>
+
+                    <div className="request-field">
+                      <label className="request-field__label" htmlFor="partner-position">
+                        <span className="req" aria-hidden="true">*</span>Должность
+                      </label>
+                      <div>
+                        <input
+                          id="partner-position"
+                          {...register('position')}
+                          placeholder="Генеральный директор"
+                          autoComplete="organization-title"
+                          className="request-input"
+                          disabled={isSubmitting}
+                        />
+                        {errors.position && <p className="request-error">{errors.position.message}</p>}
+                      </div>
+                    </div>
+
+                    <div className="request-field">
+                      <label className="request-field__label" htmlFor="partner-company">
+                        <span className="req" aria-hidden="true">*</span>Компания
+                      </label>
+                      <div>
+                        <input
+                          id="partner-company"
+                          {...register('company')}
+                          placeholder="ООО «Компания»"
+                          autoComplete="organization"
+                          className="request-input"
+                          disabled={isSubmitting}
+                        />
+                        {errors.company && <p className="request-error">{errors.company.message}</p>}
+                      </div>
+                    </div>
+
+                    <div className="request-field">
+                      <label className="request-field__label" htmlFor="partner-phone">
+                        <span className="req" aria-hidden="true">*</span>Телефон
+                      </label>
+                      <div>
+                        <input
+                          id="partner-phone"
                           type="tel"
                           placeholder="+7 (___) ___ __ __"
                           {...register('phone')}
-                          className="w-full bg-[#1A1A1A]/80 border border-[#2A2A2A] rounded-lg px-3 py-2 text-white text-sm placeholder-[#666666] focus:outline-none focus:border-[#FF8800] transition-colors"
+                          autoComplete="tel"
+                          inputMode="tel"
+                          className="request-input"
+                          disabled={isSubmitting}
                         />
-                        {errors.phone && <p className="text-red-500 text-xs mt-0.5">{errors.phone.message}</p>}
+                        {errors.phone && <p className="request-error">{errors.phone.message}</p>}
                       </div>
                     </div>
 
-                    {/* Согласие */}
-                    <div className="flex items-start gap-2 pt-2">
-                      <input id="partner-consent" type="checkbox" {...register('consent')} className="mt-1 w-4 h-4 accent-[#FF8800] rounded border-[#2A2A2A] bg-[#1A1A1A] cursor-pointer flex-shrink-0" />
-                      <label htmlFor="partner-consent" className="text-xs text-[#A0A0A0] leading-tight cursor-pointer">
-                        Я согласен с политикой <a href="/privacy" target="_blank" className="text-[#FF8800] hover:underline">обработки персональных данных</a>
+                    <div className="request-consent">
+                      <input
+                        id="partner-consent"
+                        type="checkbox"
+                        {...register('consent')}
+                        disabled={isSubmitting}
+                      />
+                      <label htmlFor="partner-consent">
+                        Я согласен с политикой{' '}
+                        <a href="/privacy" target="_blank" rel="noopener noreferrer">
+                          обработки персональных данных
+                        </a>
                       </label>
                     </div>
-                    {errors.consent && <p className="text-red-500 text-xs mt-1">{errors.consent.message}</p>}
+                    {errors.consent && <p className="request-error">{errors.consent.message}</p>}
 
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                       className="w-full mt-2 py-3 rounded-lg font-medium bg-gradient-to-r from-[#FF8800] to-[#E8850F] text-white hover:from-[#FFA733] hover:to-[#FF8800] hover:shadow-xl hover:shadow-[#FF8800]/30 transition-all duration-300 shadow-lg shadow-[#FF8800]/20 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {isSubmitting ? 'Отправка...' : 'Оставить заявку'}
+                    <button type="submit" disabled={isSubmitting} className="request-submit">
+                      {isSubmitting ? (
+                        <>
+                          <span className="request-submit__spinner" aria-hidden="true" />
+                          Отправляем...
+                        </>
+                      ) : (
+                        'Оставить заявку'
+                      )}
                     </button>
+                    {submitError && (
+                      <p className="request-error request-error--submit" role="alert">
+                        {submitError}
+                      </p>
+                    )}
                   </form>
+
+                  <p className="request-privacy-note">
+                    <Shield aria-hidden="true" />
+                    <span>
+                      Мы гарантируем конфиденциальность ваших данных и не передаем их третьим лицам
+                    </span>
+                  </p>
                 </>
               )}
             </div>

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { FlipText } from '@/components/ui/FlipText';
-import { ParticipantModal } from '@/components/shared/ParticipantModal';
+import { RequestModal } from '@/components/shared/RequestModal';
 
 type UpcomingCtaProps = {
   /** slug экспедиции, на странице которой находится кнопка */
@@ -26,7 +26,7 @@ export function UpcomingCta({ expeditionSlug }: UpcomingCtaProps) {
         </button>
       </div>
 
-      <ParticipantModal
+      <RequestModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         defaultExpeditionSlug={expeditionSlug}

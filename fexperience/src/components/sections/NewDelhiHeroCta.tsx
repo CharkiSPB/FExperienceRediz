@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { FlipText } from '@/components/ui/FlipText';
-import { ParticipantModal } from '@/components/shared/ParticipantModal';
+import { RequestModal } from '@/components/shared/RequestModal';
 
 export function NewDelhiHeroCta() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,7 +16,7 @@ export function NewDelhiHeroCta() {
         <FlipText className="flex items-center justify-center">СТАТЬ УЧАСТНИКОМ</FlipText>
       </button>
 
-      <ParticipantModal
+      <RequestModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         defaultExpeditionSlug="new-delhi"

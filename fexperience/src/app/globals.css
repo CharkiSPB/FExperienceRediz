@@ -5669,14 +5669,13 @@ body::before {
   width: 1px;
   background: rgba(255, 107, 44, .3);
 }
-/* Заглушка под фирменные иконки пользователя (28×28) */
-.included-item__icon {
-  width: 28px;
-  height: 28px;
+/* Порядковый номер пункта фирменным оранжевым */
+.included-item__num {
   flex-shrink: 0;
-  margin-top: 2px;
-  border: 1px dashed rgba(26, 26, 26, .25);
-  border-radius: 6px;
+  margin-top: 1px;
+  font: 600 15px/1.45 var(--font-sans), sans-serif;
+  letter-spacing: .04em;
+  color: var(--color-brand-600);
 }
 .included-item__name {
   font: 600 15px/1.45 var(--font-sans), sans-serif;
@@ -5863,3 +5862,420 @@ body::before {
   }
 }
 
+
+/* ============================================================
+   RequestModal — полноэкранный разворот 50/50 (FExperience_request_modal_redesign)
+   Слева фото выбранной экспедиции, справа тёмная форма. Логика формы
+   (react-hook-form + zod) — в компоненте, здесь только визуал.
+   ============================================================ */
+.request-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  overflow-y: auto;
+  background: rgba(20, 16, 12, .62);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.request-modal__grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: min(1080px, 100%);
+  max-height: min(860px, calc(100vh - 48px));
+  margin: auto;
+  border-radius: 20px;
+  overflow: hidden;
+  background: var(--color-paper-dark);
+  box-shadow: 0 32px 90px rgba(10, 8, 6, .45);
+}
+
+/* Левая панель — медиа */
+.request-modal__media {
+  position: relative;
+  overflow: hidden;
+  min-height: 480px;
+}
+.request-modal__media-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  animation: request-photo-in .3s var(--ease);
+}
+@keyframes request-photo-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.request-modal__media-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(26, 26, 26, .30) 0%,
+    rgba(26, 26, 26, .62) 100%
+  );
+}
+
+/* Левая панель — контент */
+.request-modal__content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  padding: 24px 32px 0;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+}
+.request-modal__content .request-modal__benefits {
+  pointer-events: auto;
+}
+.request-modal__logo {
+  width: 150px;
+  height: auto;
+}
+.request-modal__eyebrow {
+  margin: 32px 0 0;
+  font: 600 12px/1 var(--font-sans), sans-serif;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--color-brand-500);
+}
+.request-modal__heading {
+  margin: 16px 0 0;
+  max-width: 420px;
+  font: 600 clamp(28px, 2.6vw, 40px)/1.2 var(--font-display), serif;
+  color: #FFF6EE;
+}
+.request-modal__heading span {
+  color: var(--color-brand-500);
+}
+.request-modal__sub {
+  margin: 14px 0 0;
+  max-width: 380px;
+  font: 400 15px/1.6 var(--font-sans), sans-serif;
+  color: rgba(255, 246, 238, .72);
+}
+.request-modal__seal {
+  position: absolute;
+  right: 40px;
+  top: 38%;
+}
+.request-modal__benefits {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  bottom: 24px;
+  margin: 0;
+  padding: 20px 24px;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  background: rgba(20, 16, 13, .55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 16px;
+}
+.request-modal__benefit svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 1.5;
+  fill: none;
+  color: var(--color-brand-500);
+}
+.request-modal__benefit-title {
+  margin: 12px 0 0;
+  font: 600 13px/1.3 var(--font-sans), sans-serif;
+  color: #FFF6EE;
+}
+.request-modal__benefit-desc {
+  margin: 6px 0 0;
+  font: 400 11.5px/1.45 var(--font-sans), sans-serif;
+  color: rgba(255, 246, 238, .6);
+}
+
+/* Правая панель — форма */
+.request-modal__form-panel {
+  position: relative;
+  grid-column: 2;
+  background: var(--color-paper-dark);
+  padding: 64px 72px 48px;
+  overflow-y: auto;
+  max-height: min(860px, calc(100vh - 48px));
+}
+.request-modal__close {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: rgba(255, 246, 238, .7);
+  cursor: pointer;
+  transition: color .2s, background .2s;
+}
+.request-modal__close:hover {
+  color: #FFF6EE;
+  background: rgba(255, 255, 255, .08);
+}
+.request-modal__title {
+  margin: 0;
+  font: 600 clamp(28px, 2.4vw, 38px)/1.2 var(--font-display), serif;
+  color: #FFF6EE;
+}
+.request-modal__title-mobile,
+.request-modal__mobile-head {
+  display: none;
+}
+.request-modal__title-line {
+  display: block;
+  width: 40px;
+  height: 2px;
+  background: var(--color-brand-600);
+  margin-top: 16px;
+}
+.request-modal__form {
+  margin-top: 4px;
+}
+.request-field {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 24px;
+  align-items: center;
+  margin-top: 28px;
+}
+.request-field__label {
+  font: 500 14px var(--font-sans), sans-serif;
+  color: rgba(255, 246, 238, .85);
+}
+.request-field__label .req {
+  color: var(--color-brand-500);
+  margin-right: 6px;
+}
+.request-input,
+.request-select {
+  width: 100%;
+  height: 52px;
+  padding: 0 16px;
+  background: rgba(255, 255, 255, .06);
+  border: 1px solid rgba(255, 255, 255, .14);
+  border-radius: 10px;
+  color: #FFF6EE;
+  font: 400 15px var(--font-sans), sans-serif;
+  transition: border-color .2s, box-shadow .2s;
+}
+.request-input::placeholder {
+  color: rgba(255, 246, 238, .35);
+}
+.request-input:focus,
+.request-select:focus {
+  outline: none;
+  border-color: var(--color-brand-600);
+  box-shadow: 0 0 0 3px rgba(255, 107, 44, .18);
+}
+.request-input:disabled,
+.request-select:disabled {
+  opacity: .6;
+}
+.request-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 40px;
+  cursor: pointer;
+}
+.request-select option {
+  color: #1A1A1A;
+}
+.request-select-wrap {
+  position: relative;
+}
+.request-select__chevron {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  color: rgba(255, 246, 238, .6);
+  pointer-events: none;
+}
+.request-error {
+  margin: 8px 0 0;
+  font: 400 12.5px/1.4 var(--font-sans), sans-serif;
+  color: #FF8A7A;
+}
+.request-error--submit {
+  margin-top: 14px;
+  text-align: center;
+}
+.request-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 28px;
+  font: 400 13px/1.5 var(--font-sans), sans-serif;
+  color: rgba(255, 246, 238, .75);
+}
+.request-consent a {
+  color: var(--color-brand-500);
+}
+.request-consent input {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  accent-color: var(--color-brand-600);
+  cursor: pointer;
+}
+.request-submit {
+  width: 100%;
+  height: 52px;
+  margin-top: 28px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--color-brand-600);
+  color: #fff;
+  font: 600 15px/1 var(--font-sans), sans-serif;
+  cursor: pointer;
+  transition: background .2s, transform .2s;
+}
+.request-submit:hover:not(:disabled) {
+  background: var(--color-brand-500);
+}
+.request-submit:disabled {
+  opacity: .6;
+  cursor: default;
+}
+.request-submit__spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  vertical-align: -3px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, .4);
+  border-top-color: #fff;
+  animation: request-spin .7s linear infinite;
+}
+@keyframes request-spin {
+  to { transform: rotate(360deg); }
+}
+/* Появление панели: overlay — opacity (framer), контент — translateY */
+.request-modal__form-panel {
+  animation: request-panel-in .25s var(--ease);
+}
+@keyframes request-panel-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+.request-privacy-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 40px 0 0;
+  font: 400 13px/1.5 var(--font-sans), sans-serif;
+  color: rgba(255, 246, 238, .55);
+}
+.request-privacy-note svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  stroke-width: 1.5;
+  fill: none;
+  color: rgba(255, 246, 238, .5);
+}
+
+/* Успех — инлайн-замена формы */
+.request-modal__success {
+  padding: 48px 0;
+  text-align: center;
+}
+.request-modal__success-check {
+  display: inline-grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(255, 107, 44, .14);
+  color: var(--color-brand-500);
+  margin-bottom: 20px;
+}
+.request-modal__success-title {
+  margin: 0;
+  font: 600 28px/1.2 var(--font-display), serif;
+  color: #FFF6EE;
+}
+.request-modal__success-text {
+  margin: 12px 0 24px;
+  font: 400 15px/1.6 var(--font-sans), sans-serif;
+  color: rgba(255, 246, 238, .7);
+}
+.request-modal__articles-link {
+  color: #FFF6EE;
+  border-color: rgba(255, 246, 238, .35);
+}
+.request-modal__articles-link:hover {
+  color: var(--color-brand-500);
+  border-color: var(--color-brand-500);
+}
+
+@media (max-width: 767px) {
+  .request-modal {
+    padding: 16px;
+  }
+  .request-modal__grid {
+    grid-template-columns: 1fr;
+    max-height: none;
+  }
+  .request-modal__media,
+  .request-modal__content {
+    display: none;
+  }
+  .request-modal__form-panel {
+    grid-column: 1;
+    padding: 32px 24px;
+    overflow: visible;
+  }
+  .request-modal__title {
+    display: none;
+  }
+  .request-modal__mobile-head {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 8px;
+  }
+  .request-modal__title-mobile {
+    display: block;
+    margin: 0;
+    font: 600 26px/1.25 var(--font-display), serif;
+    color: #FFF6EE;
+  }
+  .request-modal__title-mobile span {
+    color: var(--color-brand-500);
+  }
+  .request-field {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .request-modal__media-img,
+  .request-modal__form-panel {
+    animation: none;
+  }
+  .request-submit__spinner {
+    animation-duration: 1.4s;
+  }
+}

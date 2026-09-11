@@ -26,8 +26,9 @@ export function ExpeditionIncluded({ includes }: ExpeditionIncludedProps) {
         <ul className="included-items">
           {includes.map((item, i) => (
             <li key={`${item}-${i}`} className={`included-item fade-up delay-${Math.min(i + 1, 6)}`}>
-              {/* Заглушка под фирменные иконки — заменить на <Icon/> пользователя */}
-              <span className="included-item__icon" data-item={item} aria-hidden="true" />
+              <span className="included-item__num" aria-hidden="true">
+                {String(i + 1).padStart(2, '0')}/
+              </span>
               <span className="included-item__name">{item}</span>
             </li>
           ))}

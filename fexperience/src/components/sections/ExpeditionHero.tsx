@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Calendar, MapPin } from 'lucide-react';
 import { useExpedition } from '@/components/providers/ExpeditionContext';
-import { ParticipantModal } from '@/components/shared/ParticipantModal';
+import { RequestModal } from '@/components/shared/RequestModal';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 import { DEFAULT_HERO_THESES } from '@/data/expeditions';
 import type { Expedition } from '@/types/expedition';
@@ -169,7 +169,7 @@ export function ExpeditionHero({ expedition, heroDate }: ExpeditionHeroProps) {
         </div>
       </div>
 
-      <ParticipantModal
+      <RequestModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         defaultExpeditionSlug={expedition.slug}

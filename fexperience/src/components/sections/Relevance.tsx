@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { FlipText } from '@/components/ui/FlipText';
-import { ParticipantModal } from '@/components/shared/ParticipantModal';
+import { RequestModal } from '@/components/shared/RequestModal';
 
 export function Relevance() {
   const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -166,7 +166,7 @@ export function Relevance() {
         </div>
       </div>
 
-      <ParticipantModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <RequestModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </section>
   );
 }

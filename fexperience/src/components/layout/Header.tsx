@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Menu, X, Send } from 'lucide-react';
-import { ParticipantModal } from '@/components/shared/ParticipantModal';
+import { RequestModal } from '@/components/shared/RequestModal';
 import { PartnerModal } from '@/components/shared/PartnerModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
@@ -289,7 +289,7 @@ export function Header() {
         )}
       </AnimatePresence>
 
-      <ParticipantModal
+      <RequestModal
         isOpen={isParticipantModalOpen}
         onClose={() => setIsParticipantModalOpen(false)}
         defaultExpeditionSlug={isExpeditionDetail ? expeditionSlug : undefined}
