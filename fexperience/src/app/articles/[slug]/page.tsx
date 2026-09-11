@@ -53,6 +53,7 @@ export default async function ArticlePage({ params }: Props) {
     .slice(0, 2);
 
   return (
+    <div className="bg-[#0D0805]">
     <article className="py-24 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Навигация "Назад" */}
       <Link
@@ -162,5 +163,6 @@ export default async function ArticlePage({ params }: Props) {
         </section>
       )}
     </article>
+    </div>
   );
 }

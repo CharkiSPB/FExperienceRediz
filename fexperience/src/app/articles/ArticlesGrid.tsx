@@ -20,7 +20,7 @@ type ArticlesGridProps = {
 export default function ArticlesGrid({ articles }: ArticlesGridProps) {
   if (articles.length === 0) {
     return (
-      <p className="text-[#A0A0A0] text-center py-20">
+      <p className="text-text-secondary text-center py-20">
         Статьи по этому региону пока нет
       </p>
     );
@@ -44,10 +44,10 @@ export default function ArticlesGrid({ articles }: ArticlesGridProps) {
           >
             <Link
               href={`/articles/${article.slug}`}
-              className="group block bg-[#110F0D] border border-[#2A2A2A] rounded-xl p-6 hover:border-[#F7931A] transition-colors"
+              className="group block bg-white border border-[var(--color-border)] rounded-xl p-6 hover:border-brand-600 transition-colors"
             >
               {article.image && (
-                <div className="relative w-full aspect-video rounded-lg overflow-hidden mb-4 bg-[#1A1A1A]">
+                <div className="relative w-full aspect-video rounded-lg overflow-hidden mb-4 bg-surface">
                   <Image
                     src={article.image}
                     alt={article.title}
@@ -57,13 +57,13 @@ export default function ArticlesGrid({ articles }: ArticlesGridProps) {
                   />
                 </div>
               )}
-              <h2 className="text-xl font-bold text-white group-hover:text-[#F7931A] transition-colors mb-2">
+              <h2 className="text-xl font-bold text-text-primary group-hover:text-brand-600 transition-colors mb-2">
                 {article.title}
               </h2>
-              <p className="text-[#A0A0A0] text-sm mb-4 line-clamp-2">
+              <p className="text-text-secondary text-sm mb-4 line-clamp-2">
                 {article.excerpt}
               </p>
-              <div className="flex items-center gap-4 text-xs text-[#666666]">
+              <div className="flex items-center gap-4 text-xs text-text-tertiary">
                 <time dateTime={article.date}>
                   {new Date(article.date).toLocaleDateString('ru-RU', {
                     day: 'numeric',
@@ -74,7 +74,7 @@ export default function ArticlesGrid({ articles }: ArticlesGridProps) {
                 {article.region && (
                   <>
                     <span>•</span>
-                    <span className="text-[#F7931A]">
+                    <span className="text-brand-600">
                       {article.region}
                     </span>
                   </>

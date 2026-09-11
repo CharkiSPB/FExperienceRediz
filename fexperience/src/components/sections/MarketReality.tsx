@@ -1,11 +1,12 @@
 'use client';
 
-import { StatsIcon } from '@/components/icons/StatsIcon';
+import Image from 'next/image';
 import { useCountUp } from '@/hooks/useCountUp';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 
 interface StatColumn {
-  icon: 'compass' | 'partnerstvo' | 'trending';
+  iconSrc: string;
+  iconAlt: string;
   end: number;
   sign: { prefix?: string; suffix?: string };
   label: string;
@@ -15,7 +16,8 @@ interface StatColumn {
 
 const columns: StatColumn[] = [
   {
-    icon: 'compass',
+    iconSrc: '/images/icons/01_Market_analysis.svg',
+    iconAlt: 'Анализ рынка',
     end: 60,
     sign: { prefix: '> ', suffix: '%' },
     label: 'неудачных экспансий',
@@ -23,7 +25,8 @@ const columns: StatColumn[] = [
     delay: 'delay-1',
   },
   {
-    icon: 'partnerstvo',
+    iconSrc: '/images/icons/02_Loyal_contacts.svg',
+    iconAlt: 'Лояльные контакты',
     end: 50,
     sign: { suffix: '+' },
     label: 'лояльных контактов',
@@ -31,7 +34,8 @@ const columns: StatColumn[] = [
     delay: 'delay-2',
   },
   {
-    icon: 'trending',
+    iconSrc: '/images/icons/03_Unclaimed_product.svg',
+    iconAlt: 'Невостребованный продукт',
     end: 40,
     sign: { prefix: '> ', suffix: '%' },
     label: 'стартапов терпят провал',
@@ -68,15 +72,13 @@ export function MarketReality() {
           <span className="eyebrow-dash" aria-hidden="true" />
           <p className="stats-band-eyebrow">Экспансия</p>
           <h2 className="stats-band-title">
-            Новый рынок начинается не с карты,
-            <br />
-            а с понимания его специфики.
+            Новые точки на карте вашего бизнеса
           </h2>
         </div>
         <p className="stats-band-lead">
-          Тысячи бизнесменов ежегодно выходят за пределы привычного рынка.
-          Знание локальной специфики помогает увидеть риски и возможности
-          ещё до принятия решения об экспансии.
+          Тысячи бизнесменов ежегодно стремятся покорить новые горизонты —
+          от соседнего региона до зарубежной страны. Ключ к успеху один —
+          знание локальной специфики.
         </p>
       </div>
       <div className="stats-band-container">
@@ -84,7 +86,7 @@ export function MarketReality() {
           {columns.map((stat) => {
             return (
               <div key={stat.label} className={`stat-col fade-up ${stat.delay}`}>
-                <StatsIcon name={stat.icon} size={51} className="stat-col-icon" />
+                <Image src={stat.iconSrc} alt={stat.iconAlt} width={92} height={92} className="stat-col-icon" />
                 <div className="stat-col-body">
                   <div className="stat-col-number">
                     <StatNumber stat={stat} />

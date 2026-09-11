@@ -169,6 +169,7 @@ export default async function ExpeditionDetailPage({ params }: Props) {
           <div className="container">
             {related.length > 0 && (
               <div className="related-block">
+                <span className="eyebrow-dash" aria-hidden="true" />
                 <p className="dir-label">Похожие экспедиции</p>
                 <div className="related-grid">
                   {related.map(exp => (
@@ -212,6 +213,7 @@ export default async function ExpeditionDetailPage({ params }: Props) {
 
             {completedReviews.length > 0 && (
               <div className="recap-reviews">
+                <span className="eyebrow-dash" aria-hidden="true" />
                 <p className="dir-label">Отзывы участников</p>
                 <h3 className="recap-reviews__title">Экспедиция в Марокко 2025</h3>
                 {completedReviews.slice(0, 3).map(review => (
@@ -239,6 +241,7 @@ export default async function ExpeditionDetailPage({ params }: Props) {
 
             {related.length > 0 && (
               <div className="related-block">
+                <span className="eyebrow-dash" aria-hidden="true" />
                 <p className="dir-label">Похожие активные направления</p>
                 <div className="related-grid">
                   {related.map(exp => (

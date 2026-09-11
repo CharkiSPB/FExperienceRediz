@@ -73,8 +73,8 @@ function FooterColumns() {
     {
       title: 'Разделы',
       links: [
-        { label: 'Рынки', href: '/#markets' },
         { label: 'Экспедиции', href: '/expeditions' },
+        { label: 'Отзывы', href: '/#reviews' },
         { label: 'Статьи', href: '/articles' },
         { label: 'О нас', href: '/about' },
       ],
@@ -84,7 +84,7 @@ function FooterColumns() {
       links: [
         { label: 'Вьетнам', href: '/expeditions/vietnam' },
         { label: 'ЮАР', href: '/expeditions/south-africa' },
-        { label: 'Марокко', href: '/expeditions/morocco' },
+        { label: 'Бразилия', href: '/expeditions/brazil' },
         { label: 'Сахалин', href: '/expeditions/sakhalin' },
       ],
     },
@@ -138,7 +138,7 @@ function FooterColumns() {
 
 export function Footer() {
   return (
-    <footer className="bg-footer border-t border-brand-600/15 px-6 pb-10 pt-16 md:px-16 md:pt-20">
+    <footer id="contacts" className="bg-footer border-t border-brand-600/15 px-6 pb-10 pt-16 md:px-16 md:pt-20 scroll-mt-24">
       <div className="mx-auto max-w-[1280px]">
         <Newsletter />
 

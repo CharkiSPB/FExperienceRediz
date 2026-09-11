@@ -5,7 +5,7 @@ export type PlatformPrinciple = {
 };
 
 export const platformStatement = {
-  eyebrow: '02 / FEXPERIENCE',
+  eyebrow: 'ПРОЕКТ / FEXPERIENCE',
   statement:
     'FExperience — специальный проект команды Forbes, который поможет оценить готовность вашего бизнеса к масштабированию, раскрыв основные риски и возможности экспансии.',
   subText:

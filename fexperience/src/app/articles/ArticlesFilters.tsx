@@ -66,8 +66,8 @@ export default function ArticlesFilters({
             onClick={() => handleFilterChange(regionItem.slug)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               activeRegion === regionItem.slug
-                ? 'bg-[#F7931A] text-white'
-                : 'bg-[#110F0D] border border-[#2A2A2A] text-[#A0A0A0] hover:text-white hover:border-[#A0A0A0]'
+                ? 'bg-brand-600 text-white'
+                : 'bg-white/60 border border-[var(--color-border)] text-text-secondary hover:text-text-primary hover:border-text-tertiary'
             }`}
           >
             {regionItem.label}

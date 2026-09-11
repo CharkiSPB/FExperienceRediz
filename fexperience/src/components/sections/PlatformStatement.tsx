@@ -95,7 +95,7 @@ export function PlatformStatement() {
         <div className="project-media fade-up delay-2">
           <span className="project-media__frame" aria-hidden="true" />
           <Image
-            src="/images/why/02FExperience-bg.webp"
+            src="/images/why/02_FExperience.webp"
             alt="Деловая встреча у окна с видом на город"
             width={720}
             height={900}

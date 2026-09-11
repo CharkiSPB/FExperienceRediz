@@ -2,19 +2,22 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Menu, X, Send } from 'lucide-react';
 import { ParticipantModal } from '@/components/shared/ParticipantModal';
 import { PartnerModal } from '@/components/shared/PartnerModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import { useLenis } from '@/components/providers/LenisProvider';
 
 const TG_LINK = 'https://t.me/Milena_Amor';
 
 const NAV_ITEMS = [
   { label: 'Экспедиции', href: '/expeditions' },
+  { label: 'Отзывы', href: '/#reviews', hash: '#reviews' },
   { label: 'Статьи', href: '/articles' },
   { label: 'О нас', href: '/about' },
+  { label: 'Контакты', href: '#contacts', hash: '#contacts' },
 ] as const;
 
 export function Header() {
@@ -24,8 +27,27 @@ export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [showJoin, setShowJoin] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const lenis = useLenis();
 
   const closeMenu = useCallback(() => setIsOpen(false), []);
+
+  // Плавный скролл к якорю (Lenis + отступ под фикс-шапку)
+  const scrollToHash = useCallback((e: React.MouseEvent<HTMLAnchorElement>, hash: string) => {
+    const target = document.querySelector(hash);
+    if (!target) {
+      // Якоря нет на этой странице (напр. #reviews вне главной) — переход
+      router.push('/' + hash);
+      return;
+    }
+    e.preventDefault();
+    window.history.pushState(null, '', hash);
+    if (lenis?.scrollTo) {
+      lenis.scrollTo(target as HTMLElement, { offset: -88 });
+    } else {
+      target.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [lenis, router]);
 
   // Детальная страница экспедиции (/expeditions/[slug])
   const isExpeditionDetail = /^\/expeditions\/[^/]+$/.test(pathname ?? '');
@@ -91,30 +113,43 @@ export function Header() {
       <header className={`header-bar fixed top-0 left-0 right-0 z-50 ${isScrolled ? 'is-scrolled' : ''}`}>
         <div className="header-bar__glass" aria-hidden="true" />
         <div className="header-bar__inner mx-auto flex h-16 md:h-20 max-w-[1600px] items-center justify-between px-6 lg:px-16">
-          {/* Логотип — слева, единая светлая версия на любом фоне шапки */}
+          {/* Логотип — слева, тёмная версия без подложек и ореолов */}
           <Link href="/" aria-label="FExperience — на главную" className="header-bar__logo">
             <Image
-              src="/images/logo/logoFExperience2.svg"
+              src="/images/logo/logoFExperience2_black.svg"
               alt="FExperience"
               width={197}
               height={34}
               priority
-              className="header-bar__logo--light h-6 md:h-7 w-auto"
+              className="h-6 md:h-7 w-auto"
             />
           </Link>
 
           {/* Навигация — desktop */}
-          <nav className="hidden xl:flex items-center gap-10">
+          <nav className="hidden xl:flex items-center gap-8 ml-24">
             {NAV_ITEMS.map((item) => {
               const active = isActive(item.href);
               const underline = active
                 ? 'after:absolute after:left-0 after:-bottom-1.5 after:h-[2px] after:w-full after:bg-brand-600'
                 : '';
+              const linkClass = `relative text-[15px] font-medium leading-none whitespace-nowrap transition-colors duration-200 cursor-pointer ${navColor(active)} ${underline}`;
+              if ('hash' in item) {
+                return (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    onClick={(e) => scrollToHash(e, item.hash)}
+                    className={linkClass}
+                  >
+                    {item.label}
+                  </a>
+                );
+              }
               return (
                 <Link
                   key={item.label}
                   href={item.href}
-                  className={`relative text-[15px] font-medium leading-none whitespace-nowrap transition-colors duration-200 ${navColor(active)} ${underline}`}
+                  className={linkClass}
                 >
                   {item.label}
                 </Link>
@@ -178,13 +213,23 @@ export function Header() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: i * 0.05, ease: [0.16, 1, 0.3, 1] }}
                 >
-                  <Link
-                    href={item.href}
-                    onClick={closeMenu}
-                    className={`mobile-nav-link ${isActive(item.href) ? 'active' : ''}`}
-                  >
-                    {item.label}
-                  </Link>
+                  {'hash' in item ? (
+                    <a
+                      href={item.href}
+                      onClick={(e) => { scrollToHash(e, item.hash); closeMenu(); }}
+                      className={`mobile-nav-link ${isActive(item.href) ? 'active' : ''}`}
+                    >
+                      {item.label}
+                    </a>
+                  ) : (
+                    <Link
+                      href={item.href}
+                      onClick={closeMenu}
+                      className={`mobile-nav-link ${isActive(item.href) ? 'active' : ''}`}
+                    >
+                      {item.label}
+                    </Link>
+                  )}
                 </motion.div>
               ))}
             </nav>
